@@ -1,1 +1,0 @@
-if( ! self.port.raw ) self.port = PortWrapper(chrome.extension.connect({name: "buffer-embed"}));
