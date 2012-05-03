@@ -34,25 +34,33 @@ var bufferOverlay = function(data, config, doneCallback) {
 	document.body.appendChild(temp);
     
     // Bind close listener
-	bufferpm.bind("buffermessage", function(data) {
+	bufferpm.bind("buffermessage", function(overlaydata) {
 		document.body.removeChild(temp);
 		bufferpm.unbind("buffermessage");
 		setTimeout(function () {
-		    doneCallback(data);
+		    doneCallback(overlaydata);
 	    }, 0);
 	});
     
 };
 
-var bufferData = function () {
+var bufferData = function (port, postData) {
     
     var config = {};
     config.local = false;
+    config.googleReader = false;
+    if( window.location.href.indexOf("google") != -1 && window.location.href.indexOf("reader") != -1 ) config.googleReader = true;
     config.attributes = [
         {
             name: "url",
             get: function (cb) {
-                cb(window.location.href);
+                if( ! config.googleReader ) {
+                    cb(window.location.href);
+                } else {
+                    var href = $("#current-entry .entry-container a.entry-title-link").attr('href');
+                    if( ! href ) href = $('.entry').first().find(".entry-container a.entry-title-link").attr('href');
+                    cb(href);
+                }
             },
             encode: function (val) {
                 return encodeURIComponent(val);
@@ -61,8 +69,15 @@ var bufferData = function () {
         {
             name: "text",
             get: function (cb) {
-                if(document.getSelection() != false) cb('"' + document.getSelection().toString() + '"');
-                else cb(document.title);
+                if( config.googleReader ) {
+                    var text = $("#current-entry .entry-container a.entry-title-link").text();
+                    if( ! text ) text = $('.entry').first().find(".entry-container a.entry-title-link").text();
+                    cb(text);
+                } else if(document.getSelection() != false) {
+                    cb('"' + document.getSelection().toString() + '"');
+                } else {
+                    cb(document.title);
+                }
             },
             encode: function (val) {
                 return encodeURIComponent(val);
@@ -71,22 +86,16 @@ var bufferData = function () {
         {
             name: "picture",
             get: function (cb) {
-                self.port.on("buffer_image", function(data) {
-                    cb(data);
-                });
-                self.port.emit("buffer_get_image");
+                cb(postData.image);
             },
             encode: function (val) {
                 return encodeURIComponent(val);
             }
         },
         {
-            name: "tweet",
+            name: "embed",
             get: function (cb) {
-                self.port.on("buffer_tweet", function(data) {
-                    cb(data);
-                });
-                self.port.emit("buffer_get_tweet");
+                cb(postData.embed);
             },
             encode: function (val) {
                 return encodeURIComponent(val);
@@ -135,18 +144,20 @@ var bufferData = function () {
     };
 
     var createOverlay = function (data) {
-        if( data.tweet ) {
-            data.text = data.tweet;
-            data.tweet = null;
-            data.url = null;
+        if( data.embed ) {
+            if( typeof data.embed === "object" ) {
+                data.text = data.embed.text;
+                data.url = data.embed.url;
+                data.picture = data.embed.image;
+                data.embed = null;
+            } else {
+                data.text = data.embed;
+                data.url = null;
+                data.embed = null;
+            }
         }
-        var count = config.attributes.length;
-        for(var i=0; i < count; i++) {
-            var a = config.attributes[i];
-            //console.log(a.name, " : ", data[a.name]);
-        }
-        bufferOverlay(data, config, function () {
-            self.port.emit("buffer_done");
+        bufferOverlay(data, config, function (overlaydata) {
+            port.emit("buffer_done", overlaydata);
         });
     };
 

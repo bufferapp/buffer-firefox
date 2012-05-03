@@ -1,9 +1,21 @@
-$(function () {
+;(function () {
     
     var config = {};
+    config.endpoint = {
+        http: "http://static.bufferapp.com/js/button.js",
+        https: "https://d389zggrogs7qo.cloudfront.net/js/button.js"
+    };
     config.image = {
         attribute: 'data-buffer-id',
-        min: 300,
+        size: {
+            width: 100,
+            height: 100,
+            diagonal: 300
+        },
+        aspect: {
+          max: 40,
+          min: 0.4  
+        },
         opacity: {
             idle: 0.2,
             active: 1
@@ -43,12 +55,13 @@ $(function () {
         anchor.className = "buffer-add-button";
         anchor.setAttribute('data-count', 'none');
         anchor.setAttribute('data-picture', image.src);
-        anchor.setAttribute('data-url', image.src); // TODO: remove this? Is this how pictures should work?
+        anchor.setAttribute('data-url', '' + document.location);
         
         buttonwrap.appendChild(anchor);
         
         var script = document.createElement('script');
-        script.src = "http://static.bufferapp.com/js/button.js";
+        if( document.location.protocol == "https:" ) script.src = config.endpoint.https;
+        else script.src = config.endpoint.http;
         
         buttonwrap.appendChild(script);
         
@@ -101,16 +114,37 @@ $(function () {
         
     };
 
-    var calcSize = function(size, y) {
-        var t = size,
-        x = 0;
-        if (!y) {
-            x = size.x;
-            y = size.y;
-        } else {
-            x = size;
+    var calcSize = function(size) {
+        return Math.pow(Math.pow(size.x, 2) + Math.pow(size.y, 2), 0.5);
+    };
+    
+    var calcGCD = function(size) {
+        var a = size.x, b = size.y;
+        var remander = 0;
+        while (b !== 0) {
+            remainder = a % b;
+            a = b;
+            b = remainder;
         }
-        return Math.pow(Math.pow(x, 2) + Math.pow(y, 2), 0.5);
+        return Math.abs(a);
+    };
+    
+    var calcAspect = function(size) {
+        if ( ! size.x || ! size.y ) return 1;
+        var gcd = calcGCD(size);
+        return (size.x / gcd) / (size.y / gcd);
+    };
+    
+    var checkSize = function(size) {
+        
+        if ( calcSize(size) < config.image.size.diagonal ) return false;
+        if ( size.x < config.image.size.width ) return false;
+        if ( size.y < config.image.size.height ) return false;
+        var aspect = calcAspect(size);
+        if ( aspect < config.image.aspect.min || aspect > config.image.aspect.max ) return false;
+        
+        return true;
+        
     };
 
     $('body')
@@ -121,9 +155,7 @@ $(function () {
             y: $(this).height()
         };
 
-        if (calcSize(size) < config.image.min) {
-            return;
-        }
+        if ( ! checkSize(size) ) return;
         
         if( ! this.hasAttribute(config.image.attribute) ) {
             addButton(this);
@@ -161,9 +193,9 @@ $(function () {
             y: $(this).height()
         };
 
-        if (calcSize(size) > config.image.min) {
+        if ( checkSize(size) ) {
             addButton(this);
         } 
     });
 
-});
+}());

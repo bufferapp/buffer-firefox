@@ -22,58 +22,68 @@ var config = {};
 config.plugin = {
     label: "Buffer This Page",
     icon: {
-        static: self.data.url('icons/buffer-icon.png'),
-        hover: self.data.url('icons/buffer-icon-hover.png'),
-        loading: self.data.url('icons/buffer-icon-loading.png')
+        static: self.data.url('img/buffer-icon.png'),
+        hover: self.data.url('img/buffer-icon-hover.png'),
+        loading: self.data.url('img/buffer-icon-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox',
     menu: {
         page: {
             label: "Buffer This Page",
-            scripts: [self.data.url('menu/buffer-page.js')]
+            scripts: [self.data.url('firefox/menu/buffer-page.js')]
         },
         selection: {
             label: "Buffer Selected Text"
         },
         image: {
             label: "Buffer This Image",
-            scripts: [self.data.url('menu/buffer-image.js')]
+            scripts: [self.data.url('firefox/menu/buffer-image.js')]
         },
     },
     overlay: {
-        scripts: [self.data.url('jquery-1.7.2.min.js'), self.data.url('postmessage.js'), self.data.url('buffer-overlay.js'), self.data.url('buffer-firefox.js')]
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('libs/postmessage.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('buffer-overlay.js'), self.data.url('firefox/buffer-firefox.js')]
     },
     twitter: {
-        scripts: [self.data.url('jquery-1.7.2.min.js'), self.data.url('buffer-twitter.js')]
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-twitter.js')]
     },
-    picture: {
-        scripts: [self.data.url('jquery-1.7.2.min.js'), self.data.url('buffer-image-css.js'), self.data.url('buffer-image.js')]
+    hn: {
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-hn.js')]
+    },
+    reader: {
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-google-reader.js')]
+    },
+    hotkey: {
+        scripts: [self.data.url('embeds/buffer-hotkey.js')]
     }
 };
 
+var listenForDataRequest = function (worker) {
+    worker.port.on("buffer_get_data", function (file) {
+        worker.port.emit("buffer_data_url", self.data.url(file));
+    })
+};
 // Overlay
 var attachOverlay = function (data, cb) {
     
-    if( typeof data === 'function' ) cb = data;
+    if( typeof data === 'function' ) {
+        cb = data;
+        data = {};
+    }
     if( ! data ) data = {};
     if( ! cb ) cb = function () {};
     
     var worker = tabs.activeTab.attach({
         contentScriptFile: config.plugin.overlay.scripts
     });
+
+    listenForDataRequest(worker);
     
-    worker.port.on('buffer_get_image', function () {
-        worker.port.emit("buffer_image", data.image);
-    });
-    
-    worker.port.on('buffer_get_tweet', function () {
-        worker.port.emit("buffer_tweet", data.tweet);
-    });
-    
-    worker.port.on('buffer_done', function () {
+    worker.port.on('buffer_done', function (overlayData) {
         worker.destroy();
-        cb();
+        cb(overlayData);
     });
+
+    worker.port.emit("buffer_click", data);
 };
 
 // Show guide on first run
@@ -105,7 +115,7 @@ button.on('click', function () {
     button.contentURL = config.plugin.icon.loading;
     attachOverlay(function() {
         button.contentURL = config.plugin.icon.static;
-    });  
+    });
 })
 
 // Context menu
@@ -134,31 +144,35 @@ menu.selection = cm.Item({
         }
     }
 });
-menu.image = cm.Item({
-    label: config.plugin.menu.image.label,
-    image: config.plugin.icon,
-    context: cm.SelectorContext("img"),
-    contentScriptFile: config.plugin.menu.image.scripts,
-    contentScriptWhen: 'start',
-    onMessage: function (image) {
-        attachOverlay({image: image});
-    }
+
+var embedHandler = function (worker) {
+    listenForDataRequest(worker);
+    worker.port.on('buffer_click', function (embed) {
+        // Buffer a tweet
+        attachOverlay({embed: embed}, function (overlaydata) {
+            if( !!overlaydata.sent ) {
+                // Buffer was sent
+                worker.port.emit("buffer_embed_clear");
+            }
+        });
+    });
+};
+
+// Embeds
+pageMod.PageMod({
+    include: '*',
+    contentScriptFile: config.plugin.hotkey.scripts,
+    onAttach: embedHandler
 });
 
-// Twitter
 pageMod.PageMod({
     include: '*.twitter.com',
     contentScriptFile: config.plugin.twitter.scripts,
-    onAttach: function (worker) {
-        worker.port.on('buffer_click', function (tweet) {
-            // Buffer a tweet
-            attachOverlay({tweet: tweet});
-        })
-    }
+    onAttach: embedHandler
 });
 
-// Pictures
 pageMod.PageMod({
-    include: '*',
-    contentScriptFile: config.plugin.picture.scripts
+    include: ['*.ycombinator.com', '*.ycombinator.org'],
+    contentScriptFile: config.plugin.hn.scripts,
+    onAttach: embedHandler
 });
