@@ -11,7 +11,6 @@ var DataWrapper = function () {
 };
 
 if( ! xt ) var xt = {};
-
 xt.data = {
     get: DataWrapper()
-}
+};

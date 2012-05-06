@@ -44,16 +44,19 @@ config.plugin = {
         scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('libs/postmessage.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('buffer-overlay.js'), self.data.url('firefox/buffer-firefox.js')]
     },
     twitter: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-twitter.js')]
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-twitter.js')]
     },
     hn: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-hn.js')]
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-hn.js')]
     },
     reader: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-google-reader.js')]
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-google-reader.js')]
+    },
+    reddit: {
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-reddit.js')]
     },
     hotkey: {
-        scripts: [self.data.url('embeds/buffer-hotkey.js')]
+        scripts: [self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('embeds/buffer-hotkey.js')]
     }
 };
 
@@ -168,6 +171,18 @@ pageMod.PageMod({
 pageMod.PageMod({
     include: '*.twitter.com',
     contentScriptFile: config.plugin.twitter.scripts,
+    onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*.google.com',
+    contentScriptFile: config.plugin.reader.scripts,
+    onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*.reddit.com',
+    contentScriptFile: config.plugin.reddit.scripts,
     onAttach: embedHandler
 });
 
