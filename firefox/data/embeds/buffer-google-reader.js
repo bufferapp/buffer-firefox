@@ -139,7 +139,7 @@
 	            
         	    temp.setAttribute('href', '#');
         	    $(temp).text(btnConfig.text);
-        	    $(temp).css({"background-image": "url(" + xt.data.get("data/img/google-reader-logo-small-white.png") + ")"})
+        	    $(temp).css({"background-image": "url(" + self.data.get("data/img/google-reader-logo-small-white.png") + ")"})
 
         	    return temp;
 	            
@@ -147,9 +147,9 @@
 	        activator: function (elem, btnConfig) {
 	            
         	    $(elem).hover(function () {
-        	        $(this).css({"background-image": "url(" + xt.data.get("data/img/google-reader-logo-small-grey.png") + ")"});
+        	        $(this).css({"background-image": "url(" + self.data.get("data/img/google-reader-logo-small-grey.png") + ")"});
         	    }, function () {
-        	        $(this).css({"background-image": "url(" + xt.data.get("data/img/google-reader-logo-small-white.png") + ")"});
+        	        $(this).css({"background-image": "url(" + self.data.get("data/img/google-reader-logo-small-white.png") + ")"});
         	    });
     
 	        },
