@@ -55,6 +55,9 @@ config.plugin = {
     reddit: {
         scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-reddit.js')]
     },
+    facebook: {
+        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-facebook.js')]
+    },
     hotkey: {
         scripts: [self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('embeds/buffer-hotkey.js')]
     }
@@ -171,6 +174,12 @@ pageMod.PageMod({
 pageMod.PageMod({
     include: '*.twitter.com',
     contentScriptFile: config.plugin.twitter.scripts,
+    onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*.facebook.com',
+    contentScriptFile: config.plugin.facebook.scripts,
     onAttach: embedHandler
 });
 
