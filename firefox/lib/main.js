@@ -22,9 +22,9 @@ var config = {};
 config.plugin = {
     label: "Buffer This Page",
     icon: {
-        static: self.data.url('img/buffer-icon.png'),
-        hover: self.data.url('img/buffer-icon-hover.png'),
-        loading: self.data.url('img/buffer-icon-loading.png')
+        static: self.data.url('shared/img/buffer-icon.png'),
+        hover: self.data.url('shared/img/buffer-icon-hover.png'),
+        loading: self.data.url('shared/img/buffer-icon-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
     menu: {
@@ -41,25 +41,25 @@ config.plugin = {
         },
     },
     overlay: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('libs/postmessage.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('buffer-overlay.js'), self.data.url('firefox/buffer-firefox.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('shared/libs/postmessage.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/buffer-overlay.js'), self.data.url('firefox/buffer-firefox.js')]
     },
     twitter: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-twitter.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-twitter.js')]
     },
     hn: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-hn.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-hn.js')]
     },
     reader: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-google-reader.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-google-reader.js')]
     },
     reddit: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-reddit.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-reddit.js')]
     },
     facebook: {
-        scripts: [self.data.url('libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('embeds/buffer-facebook.js')]
+        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-facebook.js')]
     },
     hotkey: {
-        scripts: [self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('embeds/buffer-hotkey.js')]
+        scripts: [self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('shared/embeds/buffer-hotkey.js')]
     }
 };
 
