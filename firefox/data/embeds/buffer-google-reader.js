@@ -34,7 +34,7 @@
             className: 'buffer-share-button',
             selector: '.buffer-share-button',
             elements:
-                    ['a', 'buffer-add-button', 'height: 18px; width: 75px; margin-right: 16px; display: inline-block; text-indent: 0px; margin: 0px; padding: 0px; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: transparent; border:none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial;',
+                    ['a', 'buffer-add-button', 'height: 18px; width: 75px; margin-right: 16px; display: inline-block; text-indent: 0px; margin: 0px; padding: 1px; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: transparent; border:none; line-height: normal; font-size: 1px; vertical-align: baseline; background-position: initial initial; background-repeat: initial initial;',
                         ['div', '', 'padding-top: 1px; position: relative; height: 16px; font-size: 13px; padding-left:20px; margin-right: 16px; background-image: url(http://static.bufferapp.com/images/logo_icon_small.png); background-repeat: no-repeat!important;',
                             ['span', '', 'height: 22px; width: 50px; position: relative;']
                         ]
