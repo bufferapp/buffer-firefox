@@ -26,7 +26,7 @@ config.plugin = {
         hover: self.data.url('img/buffer-icon-hover.png'),
         loading: self.data.url('img/buffer-icon-loading.png')
     },
-    guide: 'http://bufferapp.com/guides/firefox',
+    guide: 'http://bufferapp.com/guides/firefox/installed',
     menu: {
         page: {
             label: "Buffer This Page",
