@@ -7,5 +7,5 @@
     "id": "jid1-zUyU7TGKwejAyA", 
     "name": "buffer",
     "homepage": "http://bufferapp.com/guides/firefox",
-    "icon": "data/buffer-extension-shared/img/Icon.png"
+    "icon": "data/shared/img/Icon.png"
 }

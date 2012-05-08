@@ -5,7 +5,7 @@ var DataWrapper = function () {
         https: 'https://d389zggrogs7qo.cloudfront.net/images/extensions/',
     }
     return function (file) {
-        file = file.replace(/data\/buffer-extension-shared\//i, '');
+        file = file.replace(/data\/shared\//i, '');
         return (document.location.protocol === "http:" ? config.endpoint.http : config.endpoint.https) + file;
     };
 };
