@@ -22,9 +22,9 @@ var config = {};
 config.plugin = {
     label: "Buffer This Page",
     icon: {
-        static: self.data.url('shared/img/buffer-icon.png'),
-        hover: self.data.url('shared/img/buffer-icon-hover.png'),
-        loading: self.data.url('shared/img/buffer-icon-loading.png')
+        static: self.data.url('firefox/img/buffer-icon.png'),
+        hover: self.data.url('firefox/img/buffer-icon-hover.png'),
+        loading: self.data.url('firefox/img/buffer-icon-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
     menu: {
