@@ -16,6 +16,8 @@ var selection = require("selection");
 var ss = require("simple-storage");
 var { Hotkey } = require('hotkeys');
 var cm = require("context-menu");
+var {Cc, Ci} = require('chrome');
+var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 
 // Configuration
 var config = {};
@@ -24,7 +26,9 @@ config.plugin = {
     icon: {
         static: self.data.url('firefox/img/buffer-icon.png'),
         hover: self.data.url('firefox/img/buffer-icon-hover.png'),
-        loading: self.data.url('firefox/img/buffer-icon-loading.png')
+        loading: self.data.url('firefox/img/buffer-icon-loading.png'),
+        small: self.data.url('firefox/img/buffer-icon-small.png'),
+        small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
     menu: {
@@ -101,6 +105,7 @@ if( ! ss.storage.run ) {
 }
 
 // Buffer this page
+/*
 var button = widgets.Widget({
     id: 'buffer-button',
     label: config.plugin.label,
@@ -123,7 +128,7 @@ button.on('click', function () {
         button.contentURL = config.plugin.icon.static;
     });
 })
-
+*/
 // Context menu
 var menu = {}
 menu.page = cm.Item({
@@ -162,6 +167,45 @@ var embedHandler = function (worker) {
             }
         });
     });
+};
+
+// Navigation bar icon
+// exports.main is called when extension is installed or re-enabled
+exports.main = function(options, callbacks) {
+        // this document is an XUL document
+    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    var navBar = document.getElementById('nav-bar');
+    if (!navBar) {
+        return;
+    }
+    var btn = document.createElement('toolbarbutton');  
+    btn.setAttribute('id', 'buffer-button');
+    btn.setAttribute('type', 'button');
+    // the toolbarbutton-1 class makes it look like a traditional button
+    btn.setAttribute('class', 'toolbarbutton-1');
+    btn.setAttribute('width', 'auto');
+    btn.setAttribute('image', config.plugin.icon.small);
+    // this text will be shown when the toolbar is set to text or text and icons
+    btn.setAttribute('label', config.plugin.label);
+    btn.addEventListener('click', function() {
+        // Go go go
+        btn.setAttribute('image', config.plugin.icon.small_loading);
+        attachOverlay(function() {
+            btn.setAttribute('image', config.plugin.icon.small);
+        });
+    }, false)
+    navBar.appendChild(btn);
+};
+ 
+// exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
+exports.onUnload = function(reason) {
+        // this document is an XUL document
+    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    var navBar = document.getElementById('nav-bar');
+    var btn = document.getElementById('buffer-button');
+    if (navBar && btn) {
+        navBar.removeChild(btn);
+    }
 };
 
 // Embeds
