@@ -31,6 +31,8 @@ config.plugin = {
         small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
+    version: "2.1.6",
+    placement_prefix: 'firefox-',
     menu: {
         page: {
             label: "Buffer This Page",
@@ -75,12 +77,10 @@ var listenForDataRequest = function (worker) {
 // Overlay
 var attachOverlay = function (data, cb) {
     
-    if( typeof data === 'function' ) {
-        cb = data;
-        data = {};
-    }
+    if( typeof data === 'function' ) cb = data;
     if( ! data ) data = {};
     if( ! cb ) cb = function () {};
+    if( ! data.embed ) data.embed = {};
     
     var worker = tabs.activeTab.attach({
         contentScriptFile: config.plugin.overlay.scripts
@@ -93,6 +93,12 @@ var attachOverlay = function (data, cb) {
         cb(overlayData);
     });
 
+    // Pass statistic data
+    data.version = config.plugin.version;
+    if( data.embed.placement ) data.embed.placement = config.plugin.placement_prefix + data.embed.placement;
+    if( data.placement ) data.placement = config.plugin.placement_prefix + data.placement;
+    else if( data.embed.placement ) data.placement = data.embed.placement;
+    // Inform overlay that click has occurred
     worker.port.emit("buffer_click", data);
 };
 
@@ -139,7 +145,7 @@ menu.page = cm.Item({
     contentScriptWhen: 'start',
     onMessage: function (data) {
         if(data == 'buffer_click') {
-            attachOverlay();
+            attachOverlay({placement: 'menu-page'});
         }
     }
 });
@@ -151,7 +157,7 @@ menu.selection = cm.Item({
     contentScriptWhen: 'start',
     onMessage: function (data) {
         if(data == 'buffer_click') {
-            attachOverlay();
+            attachOverlay({placement: 'menu-selection'});
         }
     }
 });
@@ -189,7 +195,7 @@ exports.main = function(options, callbacks) {
     btn.setAttribute('label', config.plugin.label);
     btn.addEventListener('click', function() {
         // Go go go
-        attachOverlay();
+        attachOverlay({placement: 'toolbar'});
     }, false)
     navBar.appendChild(btn);
 };
