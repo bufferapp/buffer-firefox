@@ -31,7 +31,7 @@ config.plugin = {
         small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
-    version: "2.1.6",
+    version: "2.1.7",
     placement_prefix: 'firefox-',
     menu: {
         page: {
