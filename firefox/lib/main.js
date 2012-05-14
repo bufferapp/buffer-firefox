@@ -31,7 +31,7 @@ config.plugin = {
         small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
-    version: "2.1.6",
+    version: "2.1.7",
     placement_prefix: 'firefox-',
     menu: {
         page: {
@@ -111,7 +111,7 @@ if( ! ss.storage.run ) {
 }
 
 // Buffer this page
-/*
+
 var button = widgets.Widget({
     id: 'buffer-button',
     label: config.plugin.label,
@@ -130,16 +130,16 @@ var button = widgets.Widget({
 button.on('click', function () {
     prev = config.plugin.icon.loading;
     button.contentURL = config.plugin.icon.loading;
-    attachOverlay(function() {
+    attachOverlay({placement: 'toolbar'}, function() {
         button.contentURL = config.plugin.icon.static;
     });
 })
-*/
+
 // Context menu
 var menu = {}
 menu.page = cm.Item({
     label: config.plugin.menu.page.label,
-    image: config.plugin.icon,
+    image: config.plugin.icon.static,
     context: cm.PageContext(),
     contentScriptFile: config.plugin.menu.page.scripts,
     contentScriptWhen: 'start',
@@ -151,7 +151,7 @@ menu.page = cm.Item({
 });
 menu.selection = cm.Item({
     label: config.plugin.menu.selection.label,
-    image: config.plugin.icon,
+    image: config.plugin.icon.static,
     context: cm.SelectionContext(),
     contentScriptFile: config.plugin.menu.page.scripts,
     contentScriptWhen: 'start',
