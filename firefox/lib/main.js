@@ -31,8 +31,7 @@ config.plugin = {
         small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
-    version: "2.1.7",
-    placement_prefix: 'firefox-',
+    version: "2.1.8",
     menu: {
         page: {
             label: "Buffer This Page",
@@ -95,9 +94,8 @@ var attachOverlay = function (data, cb) {
 
     // Pass statistic data
     data.version = config.plugin.version;
-    if( data.embed.placement ) data.embed.placement = config.plugin.placement_prefix + data.embed.placement;
-    if( data.placement ) data.placement = config.plugin.placement_prefix + data.placement;
-    else if( data.embed.placement ) data.placement = data.embed.placement;
+    if( data.embed.placement ) data.placement = data.embed.placement;
+
     // Inform overlay that click has occurred
     worker.port.emit("buffer_click", data);
 };
