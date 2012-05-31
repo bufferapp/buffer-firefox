@@ -46,32 +46,99 @@ config.plugin = {
         },
     },
     overlay: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('shared/libs/postmessage.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/buffer-overlay.js'), self.data.url('firefox/buffer-firefox.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('shared/libs/postmessage.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-scraper.js'),
+            self.data.url('shared/buffer-overlay.js'),
+            self.data.url('firefox/buffer-firefox.js')
+        ]
     },
     twitter: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-twitter.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'), 
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-twitter.js')
+        ]
     },
     hn: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-hn.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'), 
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-hn.js')
+        ]
     },
     reader: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-google-reader.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-google-reader.js')
+        ]
     },
     reddit: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-reddit.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-reddit.js')
+        ]
     },
     facebook: {
-        scripts: [self.data.url('shared/libs/jquery-1.7.2.min.js'), self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('firefox/buffer-firefox-data-wrapper.js'), self.data.url('shared/embeds/buffer-facebook.js')]
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-facebook.js')
+        ]
     },
     hotkey: {
-        scripts: [self.data.url('firefox/buffer-firefox-port-wrapper.js'), self.data.url('shared/embeds/buffer-hotkey.js')]
+        scripts: [
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('shared/embeds/buffer-hotkey.js')
+        ]
+    },
+    scraper: {
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('shared/embeds/buffer-overlay-scraper.js')
+        ]
     }
 };
+
+/**
+ * Workers
+ */
+var overlayWorker, scraperWorker;
 
 var listenForDataRequest = function (worker) {
     worker.port.on("buffer_get_data", function (file) {
         worker.port.emit("buffer_data_url", self.data.url(file));
-    })
+    });
+};
+var listenForDetailsRequest = function (worker) {
+
+    console.log("listenForDetailsRequest");
+
+    if( ! overlayWorker ) return;
+
+    scraperWorker = worker;
+
+    overlayWorker.port.on("buffer_details", function (data) {
+        console.log("buffer_details", data);
+        scraperWorker.port.emit("buffer_details", data);
+    });
+
+    scraperWorker.port.on("buffer_details_request", function () {
+        console.log("buffer_details_request recieved by main");
+        overlayWorker.port.emit("buffer_details_request")
+    });
+
 };
 // Overlay
 var attachOverlay = function (data, cb) {
@@ -80,10 +147,14 @@ var attachOverlay = function (data, cb) {
     if( ! data ) data = {};
     if( ! cb ) cb = function () {};
     if( ! data.embed ) data.embed = {};
-    
+
+    console.log("Setting up overlayWorker");
+
     var worker = tabs.activeTab.attach({
         contentScriptFile: config.plugin.overlay.scripts
     });
+
+    overlayWorker = worker;
 
     listenForDataRequest(worker);
     
@@ -160,8 +231,15 @@ menu.selection = cm.Item({
     }
 });
 
-var embedHandler = function (worker) {
+var embedHandler = function (worker, scraper) {
+
     listenForDataRequest(worker);
+    
+    if( scraper ) {
+        scraperWorker = worker;
+        listenForDetailsRequest(worker);
+    }
+
     worker.port.on('buffer_click', function (embed) {
         // Buffer a tweet
         attachOverlay({embed: embed}, function (overlaydata) {
@@ -214,6 +292,14 @@ pageMod.PageMod({
     include: '*',
     contentScriptFile: config.plugin.hotkey.scripts,
     onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*.bufferapp.com',
+    contentScriptFile: config.plugin.scraper.scripts,
+    onAttach: function(worker) {
+        embedHandler(worker, true);
+    }
 });
 
 pageMod.PageMod({
