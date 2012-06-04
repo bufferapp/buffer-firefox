@@ -16,7 +16,7 @@ var selection = require("selection");
 var ss = require("simple-storage");
 var { Hotkey } = require('hotkeys');
 var cm = require("context-menu");
-var {Cc, Ci} = require('chrome');
+var { Cc, Ci } = require('chrome');
 var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 
 // Configuration
@@ -123,19 +123,15 @@ var listenForDataRequest = function (worker) {
 };
 var listenForDetailsRequest = function (worker) {
 
-    console.log("listenForDetailsRequest");
-
     if( ! overlayWorker ) return;
 
     scraperWorker = worker;
 
     overlayWorker.port.on("buffer_details", function (data) {
-        console.log("buffer_details", data);
         scraperWorker.port.emit("buffer_details", data);
     });
 
     scraperWorker.port.on("buffer_details_request", function () {
-        console.log("buffer_details_request recieved by main");
         overlayWorker.port.emit("buffer_details_request")
     });
 
@@ -147,8 +143,6 @@ var attachOverlay = function (data, cb) {
     if( ! data ) data = {};
     if( ! cb ) cb = function () {};
     if( ! data.embed ) data.embed = {};
-
-    console.log("Setting up overlayWorker");
 
     var worker = tabs.activeTab.attach({
         contentScriptFile: config.plugin.overlay.scripts
