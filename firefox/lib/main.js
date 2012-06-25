@@ -8,27 +8,27 @@ Authors: Joel Gascoigne         Tom Ashworth
 */
 
 // Plugin APIs
-var widgets = require("widget");
-var tabs = require("tabs");
-var self = require("self");
-var pageMod = require("page-mod");
-var selection = require("selection");
-var ss = require("simple-storage");
-var { Hotkey } = require('hotkeys');
-var cm = require("context-menu");
-var { Cc, Ci } = require('chrome');
-var mediator = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+var widgets     = require("widget");
+var tabs        = require("tabs");
+var self        = require("self");
+var pageMod     = require("page-mod");
+var selection   = require("selection");
+var ss          = require("simple-storage");
+var { Hotkey }  = require('hotkeys');
+var cm          = require("context-menu");
+var { Cc, Ci }  = require('chrome');
+var mediator    = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 
 // Configuration
 var config = {};
 config.plugin = {
     label: "Buffer This Page",
     icon: {
-        static: self.data.url('firefox/img/buffer-icon.png'),
-        hover: self.data.url('firefox/img/buffer-icon-hover.png'),
-        loading: self.data.url('firefox/img/buffer-icon-loading.png'),
-        small: self.data.url('firefox/img/buffer-icon-small.png'),
-        small_loading: self.data.url('firefox/img/buffer-icon-small-loading.png')
+        static:         self.data.url('firefox/img/buffer-icon.png'),
+        hover:          self.data.url('firefox/img/buffer-icon-hover.png'),
+        loading:        self.data.url('firefox/img/buffer-icon-loading.png'),
+        small:          self.data.url('firefox/img/buffer-icon-small.png'),
+        small_loading:  self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
     version: "2.2.2",
@@ -248,37 +248,37 @@ var embedHandler = function (worker, scraper) {
 // Navigation bar icon
 // exports.main is called when extension is installed or re-enabled
 exports.main = function(options, callbacks) {
-        // this document is an XUL document
-    var document = mediator.getMostRecentWindow('navigator:browser').document;      
-    var navBar = document.getElementById('nav-bar');
-    if (!navBar) {
-        return;
-    }
-    var btn = document.createElement('toolbarbutton');  
-    btn.setAttribute('id', 'buffer-button');
-    btn.setAttribute('type', 'button');
-    // the toolbarbutton-1 class makes it look like a traditional button
-    btn.setAttribute('class', 'toolbarbutton-1');
-    btn.setAttribute('width', 'auto');
-    btn.setAttribute('image', config.plugin.icon.small);
-    // this text will be shown when the toolbar is set to text or text and icons
-    btn.setAttribute('label', config.plugin.label);
-    btn.addEventListener('click', function() {
-        // Go go go
-        attachOverlay({placement: 'toolbar'});
-    }, false)
-    navBar.appendChild(btn);
+    // this document is an XUL document
+    // var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    // var navBar = document.getElementById('nav-bar');
+    // if (!navBar) {
+    //     return;
+    // }
+    // var btn = document.createElement('toolbarbutton');  
+    // btn.setAttribute('id', 'buffer-button');
+    // btn.setAttribute('type', 'button');
+    // // the toolbarbutton-1 class makes it look like a traditional button
+    // btn.setAttribute('class', 'toolbarbutton-1');
+    // btn.setAttribute('width', 'auto');
+    // btn.setAttribute('image', config.plugin.icon.small);
+    // // this text will be shown when the toolbar is set to text or text and icons
+    // btn.setAttribute('label', config.plugin.label);
+    // btn.addEventListener('click', function() {
+    //     // Go go go
+    //     attachOverlay({placement: 'toolbar'});
+    // }, false)
+    // navBar.appendChild(btn);
 };
  
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
-        // this document is an XUL document
-    var document = mediator.getMostRecentWindow('navigator:browser').document;      
-    var navBar = document.getElementById('nav-bar');
-    var btn = document.getElementById('buffer-button');
-    if (navBar && btn) {
-        navBar.removeChild(btn);
-    }
+    // this document is an XUL document
+    // var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    // var navBar = document.getElementById('nav-bar');
+    // var btn = document.getElementById('buffer-button');
+    // if (navBar && btn) {
+    //     navBar.removeChild(btn);
+    // }
 };
 
 // Embeds
