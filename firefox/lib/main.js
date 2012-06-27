@@ -31,7 +31,7 @@ config.plugin = {
         small_loading:  self.data.url('firefox/img/buffer-icon-small-loading.png')
     },
     guide: 'http://bufferapp.com/guides/firefox/installed',
-    version: "2.2.2",
+    version: "2.2.4",
     menu: {
         page: {
             label: "Buffer This Page",
@@ -249,36 +249,36 @@ var embedHandler = function (worker, scraper) {
 // exports.main is called when extension is installed or re-enabled
 exports.main = function(options, callbacks) {
     // this document is an XUL document
-    // var document = mediator.getMostRecentWindow('navigator:browser').document;      
-    // var navBar = document.getElementById('nav-bar');
-    // if (!navBar) {
-    //     return;
-    // }
-    // var btn = document.createElement('toolbarbutton');  
-    // btn.setAttribute('id', 'buffer-button');
-    // btn.setAttribute('type', 'button');
-    // // the toolbarbutton-1 class makes it look like a traditional button
-    // btn.setAttribute('class', 'toolbarbutton-1');
-    // btn.setAttribute('width', 'auto');
-    // btn.setAttribute('image', config.plugin.icon.small);
-    // // this text will be shown when the toolbar is set to text or text and icons
-    // btn.setAttribute('label', config.plugin.label);
-    // btn.addEventListener('click', function() {
-    //     // Go go go
-    //     attachOverlay({placement: 'toolbar'});
-    // }, false)
-    // navBar.appendChild(btn);
+    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    var navBar = document.getElementById('nav-bar');
+    if (!navBar) {
+        return;
+    }
+    var btn = document.createElement('toolbarbutton');  
+    btn.setAttribute('id', 'buffer-button');
+    btn.setAttribute('type', 'button');
+    // the toolbarbutton-1 class makes it look like a traditional button
+    btn.setAttribute('class', 'toolbarbutton-1');
+    btn.setAttribute('width', 'auto');
+    btn.setAttribute('image', config.plugin.icon.small);
+    // this text will be shown when the toolbar is set to text or text and icons
+    btn.setAttribute('label', config.plugin.label);
+    btn.addEventListener('click', function() {
+        // Go go go
+        attachOverlay({placement: 'toolbar'});
+    }, false)
+    navBar.appendChild(btn);
 };
  
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
     // this document is an XUL document
-    // var document = mediator.getMostRecentWindow('navigator:browser').document;      
-    // var navBar = document.getElementById('nav-bar');
-    // var btn = document.getElementById('buffer-button');
-    // if (navBar && btn) {
-    //     navBar.removeChild(btn);
-    // }
+    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+    var navBar = document.getElementById('nav-bar');
+    var btn = document.getElementById('buffer-button');
+    if (navBar && btn) {
+        navBar.removeChild(btn);
+    }
 };
 
 // Embeds
