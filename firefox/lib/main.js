@@ -14,6 +14,7 @@ var self        = require("self");
 var pageMod     = require("page-mod");
 var selection   = require("selection");
 var ss          = require("simple-storage");
+var simplePrefs = require("simple-prefs");
 var { Hotkey }  = require('hotkeys');
 var cm          = require("context-menu");
 var { Cc, Ci }  = require('chrome');
@@ -225,6 +226,83 @@ menu.selection = cm.Item({
     }
 });
 
+// Options & Preferences
+
+/**
+ * Turns the preferences object into something useful for the content scripts
+ */
+var buildOptions = function () {
+
+    var prefs = [{
+        "name": "twitter",
+        "title": "Twitter Integration",
+        "type": "bool"
+    },
+    {
+        "name": "facebook",
+        "title": "Facebook Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "reader",
+        "title": "Google Reader Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "reddit",
+        "title": "Reddit Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "hacker",
+        "title": "Hacker News Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "key-combo",
+        "title": "Keyboard Shortcut",
+        "type": "string",
+        "value": "alt-b"
+    },
+    {
+        "name": "key-enable",
+        "title": "Enable Keyboard Shortcut?",
+        "type": "bool",
+        "value": true
+    }];
+
+    var options = {}, pref;
+
+    // Use "false" if false, and use the item name if true.
+    // Stupid, yep, but it made sense in Chrome.
+    // TODO: Make this less stupid.
+    for( var i in prefs ) {
+        if( prefs.hasOwnProperty(i) ) {
+            pref = prefs[i];
+            if( pref.name == 'key-combo' ) {
+                options['buffer.op.key-combo'] = simplePrefs.prefs['key-combo'];
+            } else {
+                if( simplePrefs.prefs[pref.name] == false ) {
+                    options["buffer.op." + pref.name] = "false";
+                } else {
+                    options["buffer.op." + pref.name] = pref.name;
+                }
+            }
+        }
+    }
+
+    for( var i in options ) {
+        console.log(i, options[i]);
+    }
+
+    return options;
+
+};
+
 var embedHandler = function (worker, scraper) {
 
     listenForDataRequest(worker);
@@ -285,12 +363,16 @@ exports.onUnload = function(reason) {
 pageMod.PageMod({
     include: '*',
     contentScriptFile: config.plugin.hotkey.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
 pageMod.PageMod({
     include: '*.bufferapp.com',
     contentScriptFile: config.plugin.scraper.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: function(worker) {
         embedHandler(worker, true);
     }
@@ -299,29 +381,39 @@ pageMod.PageMod({
 pageMod.PageMod({
     include: '*.twitter.com',
     contentScriptFile: config.plugin.twitter.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
 pageMod.PageMod({
     include: '*.facebook.com',
     contentScriptFile: config.plugin.facebook.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
 pageMod.PageMod({
     include: '*.google.com',
     contentScriptFile: config.plugin.reader.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
 pageMod.PageMod({
     include: '*.reddit.com',
     contentScriptFile: config.plugin.reddit.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
 pageMod.PageMod({
     include: ['*.ycombinator.com', '*.ycombinator.org'],
     contentScriptFile: config.plugin.hn.scripts,
+    contentScriptWhen: "ready",
+    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
