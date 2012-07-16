@@ -295,10 +295,6 @@ var buildOptions = function () {
         }
     }
 
-    for( var i in options ) {
-        console.log(i, options[i]);
-    }
-
     return options;
 
 };
