@@ -226,6 +226,17 @@ menu.selection = cm.Item({
     }
 });
 
+menu.image = cm.Item({
+    label: config.plugin.menu.image.label,
+    image: config.plugin.icon.static,
+    context: cm.SelectorContext('img'),
+    contentScriptFile: config.plugin.menu.image.scripts,
+    contentScriptWhen: 'start',
+    onMessage: function (src) {
+        attachOverlay({placement: 'menu-image', image: src});
+    }
+});
+
 // Options & Preferences
 
 /**
