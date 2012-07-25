@@ -7,5 +7,47 @@
   "id": "jid1-zUyU7TGKwejAyA", 
   "name": "buffer",
   "homepage": "http://bufferapp.com/guides/firefox",
-  "icon": "data/shared/img/Icon.png"
+  "icon": "data/shared/img/Icon.png",
+  "preferences": [{
+        "name": "twitter",
+        "title": "Twitter Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "facebook",
+        "title": "Facebook Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "reader",
+        "title": "Google Reader Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "reddit",
+        "title": "Reddit Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "hacker",
+        "title": "Hacker News Integration",
+        "type": "bool",
+        "value": true
+    },
+    {
+        "name": "key-combo",
+        "title": "Keyboard Shortcut",
+        "type": "string",
+        "value": "alt+b"
+    },
+    {
+        "name": "key-enable",
+        "title": "Enable Keyboard Shortcut?",
+        "type": "bool",
+        "value": true
+    }]
 }

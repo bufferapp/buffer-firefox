@@ -121,7 +121,10 @@ var listenForDataRequest = function (worker) {
     worker.port.on("buffer_get_data", function (file) {
         worker.port.emit("buffer_data_url", self.data.url(file));
     });
+
+    worker.port.emit("buffer_options", buildOptions());
 };
+
 var listenForDetailsRequest = function (worker) {
 
     if( ! overlayWorker ) return;
@@ -247,43 +250,44 @@ var buildOptions = function () {
     var prefs = [{
         "name": "twitter",
         "title": "Twitter Integration",
-        "type": "bool"
+        "type": "bool",
+        "value": simplePrefs.prefs.twitter
     },
     {
         "name": "facebook",
         "title": "Facebook Integration",
         "type": "bool",
-        "value": true
+        "value": simplePrefs.prefs.facebook
     },
     {
         "name": "reader",
         "title": "Google Reader Integration",
         "type": "bool",
-        "value": true
+        "value": simplePrefs.prefs.reader
     },
     {
         "name": "reddit",
         "title": "Reddit Integration",
         "type": "bool",
-        "value": true
+        "value": simplePrefs.prefs.reddit
     },
     {
         "name": "hacker",
         "title": "Hacker News Integration",
         "type": "bool",
-        "value": true
+        "value": simplePrefs.prefs.hacker
     },
     {
         "name": "key-combo",
         "title": "Keyboard Shortcut",
         "type": "string",
-        "value": "alt-b"
+        "value": simplePrefs.prefs['key-combo']
     },
     {
         "name": "key-enable",
         "title": "Enable Keyboard Shortcut?",
         "type": "bool",
-        "value": true
+        "value": simplePrefs.prefs['key-enable']
     }];
 
     var options = {}, pref;
@@ -303,6 +307,7 @@ var buildOptions = function () {
                     options["buffer.op." + pref.name] = pref.name;
                 }
             }
+            // console.log(pref.name, options["buffer.op." + pref.name]);
         }
     }
 
@@ -371,7 +376,6 @@ pageMod.PageMod({
     include: '*',
     contentScriptFile: config.plugin.hotkey.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
@@ -379,7 +383,6 @@ pageMod.PageMod({
     include: '*.bufferapp.com',
     contentScriptFile: config.plugin.scraper.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: function(worker) {
         embedHandler(worker, true);
     }
@@ -389,7 +392,6 @@ pageMod.PageMod({
     include: '*.twitter.com',
     contentScriptFile: config.plugin.twitter.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
@@ -397,7 +399,6 @@ pageMod.PageMod({
     include: '*.facebook.com',
     contentScriptFile: config.plugin.facebook.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
@@ -405,7 +406,6 @@ pageMod.PageMod({
     include: '*.google.com',
     contentScriptFile: config.plugin.reader.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
@@ -413,7 +413,6 @@ pageMod.PageMod({
     include: '*.reddit.com',
     contentScriptFile: config.plugin.reddit.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
 
@@ -421,6 +420,5 @@ pageMod.PageMod({
     include: ['*.ycombinator.com', '*.ycombinator.org'],
     contentScriptFile: config.plugin.hn.scripts,
     contentScriptWhen: "ready",
-    contentScriptOptions: buildOptions(),
     onAttach: embedHandler
 });
