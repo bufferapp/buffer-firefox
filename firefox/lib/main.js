@@ -44,7 +44,7 @@ config.plugin = {
         image: {
             label: "Buffer This Image",
             scripts: [self.data.url('firefox/menu/buffer-image.js')]
-        },
+        }
     },
     overlay: {
         scripts: [
@@ -59,7 +59,7 @@ config.plugin = {
     },
     twitter: {
         scripts: [
-            self.data.url('shared/libs/jquery-1.7.2.min.js'), 
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
             self.data.url('firefox/buffer-firefox-port-wrapper.js'),
             self.data.url('firefox/buffer-firefox-data-wrapper.js'),
             self.data.url('shared/embeds/buffer-twitter.js')
@@ -67,7 +67,7 @@ config.plugin = {
     },
     hn: {
         scripts: [
-            self.data.url('shared/libs/jquery-1.7.2.min.js'), 
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
             self.data.url('firefox/buffer-firefox-port-wrapper.js'),
             self.data.url('firefox/buffer-firefox-data-wrapper.js'),
             self.data.url('shared/embeds/buffer-hn.js')
@@ -136,7 +136,7 @@ var listenForDetailsRequest = function (worker) {
     });
 
     scraperWorker.port.on("buffer_details_request", function () {
-        overlayWorker.port.emit("buffer_details_request")
+        overlayWorker.port.emit("buffer_details_request");
     });
 
 };
@@ -193,17 +193,17 @@ var button = widgets.Widget({
             this.contentURL = config.plugin.icon.static;
         }
     }
-})
+});
 button.on('click', function () {
     prev = config.plugin.icon.loading;
     button.contentURL = config.plugin.icon.loading;
     attachOverlay({placement: 'toolbar'}, function() {
         button.contentURL = config.plugin.icon.static;
     });
-})
+});
 
 // Context menu
-var menu = {}
+var menu = {};
 menu.page = cm.Item({
     label: config.plugin.menu.page.label,
     image: config.plugin.icon.static,
@@ -335,13 +335,13 @@ var embedHandler = function (worker, scraper) {
     });
 };
 
-var addNavBarButton = function(window) {
-    var document = window.document;
+var addNavBarButton = function(browserWindow) {
+    var document = browserWindow.document;
     var navBar = document.getElementById('nav-bar');
     if (!navBar) {
         return;
     }
-    var btn = document.createElement('toolbarbutton');  
+    var btn = document.createElement('toolbarbutton');
     btn.setAttribute('id', 'buffer-button');
     btn.setAttribute('type', 'button');
     // the toolbarbutton-1 class makes it look like a traditional button
@@ -353,28 +353,32 @@ var addNavBarButton = function(window) {
     btn.addEventListener('click', function() {
         // Go go go
         attachOverlay({placement: 'toolbar'});
-    }, false)
+    }, false);
     navBar.appendChild(btn);
-}
+};
 
-var removeNavBarButton = function(window) {
-    var document = window.document;
+var removeNavBarButton = function(browserWindow) {
+    var document = browserWindow.document;
     var navBar = document.getElementById('nav-bar');
     var btn = document.getElementById('buffer-button');
     if (navBar && btn) {
         navBar.removeChild(btn);
     }
-}
+};
 
 // Navigation bar icon
 // exports.main is called when extension is installed or re-enabled
 exports.main = function(options, callbacks) {
 
+    // for the current window
+    var browserWindow = mediator.getMostRecentWindow('navigator:browser');
+    addNavBarButton(browserWindow);
+
     // handle new windows
     var windowListener = {
       onOpenWindow: function(aWindow) {
         // Wait for the window to finish loading
-        let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+        var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
         addNavBarButton(domWindow);
         domWindow.addEventListener("load", function() {
           domWindow.removeEventListener("load", arguments.callee, false);
@@ -387,11 +391,6 @@ exports.main = function(options, callbacks) {
       onWindowTitleChange: function(aWindow, aTitle) { }
     };
     mediator.addListener(windowListener);
-
-
-    // for the current window
-    var window = mediator.getMostRecentWindow('navigator:browser');
-    addNavBarButton(window);
 };
  
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
