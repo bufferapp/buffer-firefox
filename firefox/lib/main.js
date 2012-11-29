@@ -335,11 +335,8 @@ var embedHandler = function (worker, scraper) {
     });
 };
 
-// Navigation bar icon
-// exports.main is called when extension is installed or re-enabled
-exports.main = function(options, callbacks) {
-    // this document is an XUL document
-    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+var addNavBarButton = function(window) {
+    var document = window.document;
     var navBar = document.getElementById('nav-bar');
     if (!navBar) {
         return;
@@ -358,17 +355,50 @@ exports.main = function(options, callbacks) {
         attachOverlay({placement: 'toolbar'});
     }, false)
     navBar.appendChild(btn);
-};
- 
-// exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
-exports.onUnload = function(reason) {
-    // this document is an XUL document
-    var document = mediator.getMostRecentWindow('navigator:browser').document;      
+}
+
+var removeNavBarButton = function(window) {
+    var document = window.document;
     var navBar = document.getElementById('nav-bar');
     var btn = document.getElementById('buffer-button');
     if (navBar && btn) {
         navBar.removeChild(btn);
     }
+}
+
+// Navigation bar icon
+// exports.main is called when extension is installed or re-enabled
+exports.main = function(options, callbacks) {
+
+    // handle new windows
+    var windowListener = {
+      onOpenWindow: function(aWindow) {
+        // Wait for the window to finish loading
+        let domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+        addNavBarButton(domWindow);
+        domWindow.addEventListener("load", function() {
+          domWindow.removeEventListener("load", arguments.callee, false);
+          addNavBarButton(domWindow);
+        }, false);
+      },
+      onCloseWindow: function(aWindow) {
+        removeNavBarButton(aWindow);
+      },
+      onWindowTitleChange: function(aWindow, aTitle) { }
+    };
+    mediator.addListener(windowListener);
+
+
+    // for the current window
+    var window = mediator.getMostRecentWindow('navigator:browser');
+    addNavBarButton(window);
+};
+ 
+// exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
+exports.onUnload = function(reason) {
+    // this document is an XUL document
+    var window = mediator.getMostRecentWindow('navigator:browser');
+    removeNavBarButton(window);
 };
 
 // Embeds
