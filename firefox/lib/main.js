@@ -346,7 +346,6 @@ var addNavBarButton = function(browserWindow) {
     btn.setAttribute('type', 'button');
     // the toolbarbutton-1 class makes it look like a traditional button
     btn.setAttribute('class', 'toolbarbutton-1');
-    btn.setAttribute('width', 'auto');
     btn.setAttribute('image', config.plugin.icon.small);
     // this text will be shown when the toolbar is set to text or text and icons
     btn.setAttribute('label', config.plugin.label);
