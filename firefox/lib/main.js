@@ -10,6 +10,7 @@ Authors: Joel Gascoigne         Tom Ashworth
 // Plugin APIs
 var widgets     = require("widget");
 var tabs        = require("tabs");
+var tabsUtils        = require("tabs/utils");
 var self        = require("self");
 var pageMod     = require("page-mod");
 var selection   = require("selection");
@@ -19,6 +20,9 @@ var { Hotkey }  = require('hotkeys');
 var cm          = require("context-menu");
 var { Cc, Ci }  = require('chrome');
 var mediator    = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+var bufferSrc   = require('bufferSrc');
+var tpc_disabled = false;
+
 
 // Configuration
 var config = {};
@@ -97,6 +101,13 @@ config.plugin = {
             self.data.url('shared/embeds/buffer-facebook.js')
         ]
     },
+    tpccheck: {
+        scripts: [
+            self.data.url('shared/libs/postmessage.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('shared/embeds/buffer-tpc-check.js')
+        ]
+    },
     hotkey: {
         scripts: [
             self.data.url('firefox/buffer-firefox-port-wrapper.js'),
@@ -165,8 +176,17 @@ var attachOverlay = function (data, cb) {
     data.version = config.plugin.version;
     if( data.embed.placement ) data.placement = data.embed.placement;
 
-    // Inform overlay that click has occurred
-    worker.port.emit("buffer_click", data);
+    var windows = tabsUtils.getAllTabContentWindows(); 
+    var window  = windows[tabs.activeTab.index];
+
+    if(tpc_disabled) {
+        //trigger the popup instead of the iframe
+        bufferSrc.bufferData(worker.port, data, window);
+    }
+    else {
+       worker.port.emit('buffer_click', data);
+    }
+
 };
 
 // Show guide on first run
@@ -315,6 +335,12 @@ var buildOptions = function () {
 
 };
 
+var tpcEmbedHandler = function(worker) {
+    worker.port.on('buffer_tpc_disabled', function() {
+        tpc_disabled = true; 
+    });
+};
+
 var embedHandler = function (worker, scraper) {
 
     listenForDataRequest(worker);
@@ -406,6 +432,14 @@ pageMod.PageMod({
     contentScriptWhen: "ready",
     onAttach: embedHandler
 });
+
+pageMod.PageMod({
+    include: '*',
+    contentScriptFile: config.plugin.tpccheck.scripts,
+    contentScriptWhen: "ready",
+    onAttach: tpcEmbedHandler
+});
+
 
 pageMod.PageMod({
     include: '*.bufferapp.com',
