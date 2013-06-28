@@ -22,12 +22,6 @@
         "value": true
     },
     {
-        "name": "reader",
-        "title": "Google Reader Integration",
-        "type": "bool",
-        "value": true
-    },
-    {
         "name": "reddit",
         "title": "Reddit Integration",
         "type": "bool",

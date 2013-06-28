@@ -77,14 +77,6 @@ config.plugin = {
             self.data.url('shared/embeds/buffer-hn.js')
         ]
     },
-    reader: {
-        scripts: [
-            self.data.url('shared/libs/jquery-1.7.2.min.js'),
-            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-            self.data.url('shared/embeds/buffer-google-reader.js')
-        ]
-    },
     reddit: {
         scripts: [
             self.data.url('shared/libs/jquery-1.7.2.min.js'),
@@ -280,12 +272,6 @@ var buildOptions = function () {
         "value": simplePrefs.prefs.facebook
     },
     {
-        "name": "reader",
-        "title": "Google Reader Integration",
-        "type": "bool",
-        "value": simplePrefs.prefs.reader
-    },
-    {
         "name": "reddit",
         "title": "Reddit Integration",
         "type": "bool",
@@ -460,13 +446,6 @@ pageMod.PageMod({
 pageMod.PageMod({
     include: '*.facebook.com',
     contentScriptFile: config.plugin.facebook.scripts,
-    contentScriptWhen: "ready",
-    onAttach: embedHandler
-});
-
-pageMod.PageMod({
-    include: '*.google.com',
-    contentScriptFile: config.plugin.reader.scripts,
     contentScriptWhen: "ready",
     onAttach: embedHandler
 });
