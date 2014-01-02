@@ -112,7 +112,12 @@ config.plugin = {
             self.data.url('firefox/buffer-firefox-port-wrapper.js'),
             self.data.url('shared/embeds/buffer-overlay-scraper.js')
         ]
-    }
+    },
+	bufferapp: {
+		scripts: [
+			self.data.url('shared/buffer-install-check.js')
+		]
+	}
 };
 
 /**
@@ -462,4 +467,11 @@ pageMod.PageMod({
     contentScriptFile: config.plugin.hn.scripts,
     contentScriptWhen: "ready",
     onAttach: embedHandler
+});
+
+pageMod.PageMod({
+	include: '*.bufferapp.com',
+	contentScriptFile: config.plugin.bufferapp.scripts,
+	contentScriptWhen: "ready",
+	contentScript: 'bufferMarkOurSite("' + config.plugin.version + '")'
 });
