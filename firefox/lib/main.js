@@ -8,21 +8,23 @@ Authors: Joel Gascoigne         Tom Ashworth
 */
 
 // Plugin APIs
-var widgets     = require("widget");
-var tabs        = require("tabs");
-var tabsUtils        = require("tabs/utils");
-var self        = require("self");
-var pageMod     = require("page-mod");
-var selection   = require("selection");
-var ss          = require("simple-storage");
-var simplePrefs = require("simple-prefs");
-var { Hotkey }  = require('hotkeys');
-var cm          = require("context-menu");
-var { Cc, Ci }  = require('chrome');
+var widgets     = require("sdk/widget");
+var tabs        = require("sdk/tabs");
+var tabsUtils   = require("sdk/tabs/utils");
+var self        = require("sdk/self");
+var pageMod     = require("sdk/page-mod");
+var selection   = require("sdk/selection");
+var ss          = require("sdk/simple-storage");
+var simplePrefs = require("sdk/simple-prefs");
+var { Hotkey }  = require("sdk/hotkeys");
+var cm          = require("sdk/context-menu");
+var { Cc, Ci, Cm, Cr, Cu }  = require('chrome');
 var mediator    = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 var bufferSrc   = require('bufferSrc');
 var tpc_disabled = false;
 
+var appInfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
+var versionChecker = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
 
 // Configuration
 var config = {};
@@ -194,31 +196,6 @@ if( ! ss.storage.run ) {
     });
 }
 
-// Buffer this page
-
-var button = widgets.Widget({
-    id: 'buffer-button',
-    label: config.plugin.label,
-    contentURL: config.plugin.icon.static,
-    onMouseover: function () {
-        if( this.contentURL !== config.plugin.icon.loading) {
-            this.contentURL = config.plugin.icon.hover;
-        }
-    },
-    onMouseout: function () {
-        if( this.contentURL !== config.plugin.icon.loading) {
-            this.contentURL = config.plugin.icon.static;
-        }
-    }
-});
-button.on('click', function () {
-    prev = config.plugin.icon.loading;
-    button.contentURL = config.plugin.icon.loading;
-    attachOverlay({placement: 'toolbar'}, function() {
-        button.contentURL = config.plugin.icon.static;
-    });
-});
-
 // Context menu
 var menu = {};
 menu.page = cm.Item({
@@ -352,39 +329,86 @@ var embedHandler = function (worker, scraper) {
     });
 };
 
-var addNavBarButton = function(browserWindow) {
-    var document = browserWindow.document;
-    var navBar = document.getElementById('nav-bar');
-    if (!navBar) {
-        return;
+var addNavBarButton = function(browserWindow) {    
+    if(versionChecker.compare(appInfo.version, "29") >= 0) {
+        CustomizableUI.createWidget({
+            id : "buffer-button",
+            defaultArea : CustomizableUI.AREA_NAVBAR,
+            label : "Buffer",
+            tooltiptext : "Buffer This Page",
+            onCommand : function(aEvent) {
+              attachOverlay({placement: 'toolbar'});
+            }
+        });
     }
-    var btn = document.createElement('toolbarbutton');
-    btn.setAttribute('id', 'buffer-button');
-    btn.setAttribute('type', 'button');
-    // the toolbarbutton-1 class makes it look like a traditional button
-    btn.setAttribute('class', 'toolbarbutton-1');
-    btn.setAttribute('image', config.plugin.icon.small);
-    // this text will be shown when the toolbar is set to text or text and icons
-    btn.setAttribute('label', config.plugin.label);
-    btn.addEventListener('click', function() {
-        // Go go go
-        attachOverlay({placement: 'toolbar'});
-    }, false);
-    navBar.appendChild(btn);
+    else{
+        var button = widgets.Widget({
+            id: 'buffer-button',
+            label: config.plugin.label,
+            contentURL: config.plugin.icon.static
+        });
+        button.on('click', function () {
+            prev = config.plugin.icon.loading;
+            button.contentURL = config.plugin.icon.loading;
+            attachOverlay({placement: 'toolbar'}, function() {
+                button.contentURL = config.plugin.icon.static;
+            });
+        });
+
+        var document = browserWindow.document;
+        var navBar = document.getElementById('nav-bar');
+        if (!navBar) {
+            return;
+        }
+        var btn = document.createElement('toolbarbutton');
+        btn.setAttribute('id', 'buffer-button');
+        btn.setAttribute('type', 'button');
+        // the toolbarbutton-1 class makes it look like a traditional button
+        btn.setAttribute('class', 'toolbarbutton-1');
+        btn.setAttribute('image', config.plugin.icon.small);
+        // this text will be shown when the toolbar is set to text or text and icons
+        btn.setAttribute('label', config.plugin.label);
+        btn.addEventListener('click', function() {
+            // Go go go
+            attachOverlay({placement: 'toolbar'});
+        }, false);
+        navBar.appendChild(btn);
+    }
 };
 
 var removeNavBarButton = function(browserWindow) {
-    var document = browserWindow.document;
-    var navBar = document.getElementById('nav-bar');
-    var btn = document.getElementById('buffer-button');
-    if (navBar && btn) {
-        navBar.removeChild(btn);
+    if(versionChecker.compare(appInfo.version, "29") >= 0) {
+         CustomizableUI.destroyWidget("buffer-button");
     }
+    else{
+        var document = browserWindow.document;
+        var navBar = document.getElementById('nav-bar');
+        var btn = document.getElementById('buffer-button');
+        if (navBar && btn) {
+           navBar.removeChild(btn);
+        }
+    } 
 };
 
 // Navigation bar icon
 // exports.main is called when extension is installed or re-enabled
 exports.main = function(options, callbacks) {
+    if(versionChecker.compare(appInfo.version, "29") >= 0) {
+        Cu.import("resource:///modules/CustomizableUI.jsm");
+
+        var io =
+          Cc["@mozilla.org/network/io-service;1"].
+            getService(Ci.nsIIOService);
+
+        var style_sheet =
+          Cc["@mozilla.org/content/style-sheet-service;1"].
+            getService(Ci.nsIStyleSheetService);
+
+        // the 'style' directive isn't supported in chrome.manifest for bootstrapped
+        // extensions, so this is the manual way of doing the same.
+        _uri = io.newURI("chrome://buffer-button/skin/toolbar.css", null, null);
+        style_sheet.loadAndRegisterSheet(_uri, style_sheet.USER_SHEET);
+    }
 
     // for the current window
     var browserWindow = mediator.getMostRecentWindow('navigator:browser');
@@ -402,7 +426,8 @@ exports.main = function(options, callbacks) {
         }, false);
       },
       onCloseWindow: function(aWindow) {
-        removeNavBarButton(aWindow);
+        var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+        removeNavBarButton(domWindow);
       },
       onWindowTitleChange: function(aWindow, aTitle) { }
     };
@@ -412,8 +437,8 @@ exports.main = function(options, callbacks) {
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
     // this document is an XUL document
-    var window = mediator.getMostRecentWindow('navigator:browser');
-    removeNavBarButton(window);
+    var browserWindow = mediator.getMostRecentWindow('navigator:browser');
+    removeNavBarButton(browserWindow);
 };
 
 // Embeds
