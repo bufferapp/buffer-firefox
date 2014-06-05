@@ -329,10 +329,12 @@ var embedHandler = function (worker, scraper) {
     });
 };
 
-var addNavBarButton = function(browserWindow) {    
+var buffer_button_id  = "buffer-button";
+
+var addNavBarButton = function(browserWindow) {
     if(versionChecker.compare(appInfo.version, "29") >= 0) {
         CustomizableUI.createWidget({
-            id : "buffer-button",
+            id : buffer_button_id,
             defaultArea : CustomizableUI.AREA_NAVBAR,
             label : "Buffer",
             tooltiptext : "Buffer This Page",
@@ -343,7 +345,7 @@ var addNavBarButton = function(browserWindow) {
     }
     else{
         var button = widgets.Widget({
-            id: 'buffer-button',
+            id: buffer_button_id,
             label: config.plugin.label,
             contentURL: config.plugin.icon.static
         });
@@ -361,7 +363,7 @@ var addNavBarButton = function(browserWindow) {
             return;
         }
         var btn = document.createElement('toolbarbutton');
-        btn.setAttribute('id', 'buffer-button');
+        btn.setAttribute('id', buffer_button_id);
         btn.setAttribute('type', 'button');
         // the toolbarbutton-1 class makes it look like a traditional button
         btn.setAttribute('class', 'toolbarbutton-1');
@@ -379,12 +381,12 @@ var addNavBarButton = function(browserWindow) {
 var removeNavBarButton = function(browserWindow, onunload) {
     // Only remove in versions bigger than 29 on onunload.
     if(versionChecker.compare(appInfo.version, "29") >= 0 && onunload) {
-        CustomizableUI.destroyWidget("buffer-button");
+        CustomizableUI.destroyWidget(buffer_button_id);
     }
     else{
         var document = browserWindow.document;
         var navBar = document.getElementById('nav-bar');
-        var btn = document.getElementById('buffer-button');
+        var btn = document.getElementById(buffer_button_id);
         if (navBar && btn) {
            navBar.removeChild(btn);
         }
@@ -415,22 +417,7 @@ exports.main = function(options, callbacks) {
     var browserWindow = mediator.getMostRecentWindow('navigator:browser');
     addNavBarButton(browserWindow);
 
-    // handle new windows
-    var windowListener = {
-      onOpenWindow: function(aWindow) {
-        // Wait for the window to finish loading
-        var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-        addNavBarButton(domWindow);
-        domWindow.addEventListener("load", function() {
-          domWindow.removeEventListener("load", arguments.callee, false);
-          addNavBarButton(domWindow);
-        }, false);
-      },
-      onCloseWindow: function(aWindow) {
-        removeNavBarButton(aWindow);
-      },
-      onWindowTitleChange: function(aWindow, aTitle) { }
-    };
+    // Add listeners
     mediator.addListener(windowListener);
 };
  
@@ -439,6 +426,24 @@ exports.onUnload = function(reason) {
     // this document is an XUL document
     var browserWindow = mediator.getMostRecentWindow('navigator:browser');
     removeNavBarButton(browserWindow, true);
+    mediator.removeListener(windowListener);
+};
+
+// handle new windows
+var windowListener = {
+  onOpenWindow: function(aWindow) {
+    // Wait for the window to finish loading
+    var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+    addNavBarButton(domWindow);
+    domWindow.addEventListener("load", function() {
+      domWindow.removeEventListener("load", arguments.callee, false);
+      addNavBarButton(domWindow);
+    }, false);
+  },
+  onCloseWindow: function(aWindow) {
+    removeNavBarButton(aWindow);
+  },
+  onWindowTitleChange: function(aWindow, aTitle) { }
 };
 
 // Embeds
