@@ -376,9 +376,10 @@ var addNavBarButton = function(browserWindow) {
     }
 };
 
-var removeNavBarButton = function(browserWindow) {
-    if(versionChecker.compare(appInfo.version, "29") >= 0) {
-         CustomizableUI.destroyWidget("buffer-button");
+var removeNavBarButton = function(browserWindow, onunload) {
+    // Only remove in versions bigger than 29 on onunload.
+    if(versionChecker.compare(appInfo.version, "29") >= 0 && onunload) {
+        CustomizableUI.destroyWidget("buffer-button");
     }
     else{
         var document = browserWindow.document;
@@ -426,8 +427,7 @@ exports.main = function(options, callbacks) {
         }, false);
       },
       onCloseWindow: function(aWindow) {
-        var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-        removeNavBarButton(domWindow);
+        removeNavBarButton(aWindow);
       },
       onWindowTitleChange: function(aWindow, aTitle) { }
     };
@@ -438,7 +438,7 @@ exports.main = function(options, callbacks) {
 exports.onUnload = function(reason) {
     // this document is an XUL document
     var browserWindow = mediator.getMostRecentWindow('navigator:browser');
-    removeNavBarButton(browserWindow);
+    removeNavBarButton(browserWindow, true);
 };
 
 // Embeds
