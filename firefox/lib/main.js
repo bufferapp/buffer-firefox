@@ -1,3 +1,4 @@
+/* jshint node:true, esnext:true */
 /*
 
 Buffer for Firefox
@@ -107,6 +108,14 @@ config.plugin = {
             self.data.url('firefox/buffer-firefox-port-wrapper.js'),
             self.data.url('shared/embeds/buffer-hotkey.js')
         ]
+    },
+    hoverButton: {
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-hover-button.js')
+        ]  
     },
     scraper: {
         scripts: [
@@ -276,6 +285,12 @@ var buildOptions = function () {
         "title": "Enable Keyboard Shortcut?",
         "type": "bool",
         "value": simplePrefs.prefs['key-enable']
+    },
+    {
+        "name": "image-overlays",
+        "title": "Buffer \"Share Image\" Button",
+        "type": "bool",
+        "value": simplePrefs.prefs['image-overlays']
     }];
 
     var options = {}, pref;
@@ -350,7 +365,7 @@ var addNavBarButton = function(browserWindow) {
             contentURL: config.plugin.icon.static
         });
         button.on('click', function () {
-            prev = config.plugin.icon.loading;
+            var prev = config.plugin.icon.loading;
             button.contentURL = config.plugin.icon.loading;
             attachOverlay({placement: 'toolbar'}, function() {
                 button.contentURL = config.plugin.icon.static;
@@ -409,7 +424,7 @@ exports.main = function(options, callbacks) {
 
         // the 'style' directive isn't supported in chrome.manifest for bootstrapped
         // extensions, so this is the manual way of doing the same.
-        _uri = io.newURI("chrome://buffer-button/skin/toolbar.css", null, null);
+        var _uri = io.newURI("chrome://buffer-button/skin/toolbar.css", null, null);
         style_sheet.loadAndRegisterSheet(_uri, style_sheet.USER_SHEET);
     }
 
@@ -456,11 +471,17 @@ pageMod.PageMod({
 
 pageMod.PageMod({
     include: '*',
+    contentScriptFile: config.plugin.hoverButton.scripts,
+    contentScriptWhen: "ready",
+    onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*',
     contentScriptFile: config.plugin.tpccheck.scripts,
     contentScriptWhen: "ready",
     onAttach: tpcEmbedHandler
 });
-
 
 pageMod.PageMod({
     include: '*.bufferapp.com',

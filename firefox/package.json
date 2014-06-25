@@ -44,5 +44,11 @@
         "title": "Enable Keyboard Shortcut?",
         "type": "bool",
         "value": true
+    },
+    {
+        "name": "image-overlays",
+        "title": "Buffer \"Share Image\" Button",
+        "type": "bool",
+        "value": true
     }]
 }

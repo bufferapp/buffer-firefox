@@ -1,3 +1,10 @@
+/**
+ * Currently all static files referenced in a firefox extension must be added
+ * to the images/extensions folder in the buffer-web repo.
+ * In the future, possibly refactor this so we can pass the proper file url
+ * as in: http://stackoverflow.com/questions/11551467/how-to-reference-a-file-in-the-data-directory-of-a-firefox-extension
+ */
+
 var DataWrapper = function () {
     var config = {};
     config.endpoint = {
