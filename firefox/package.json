@@ -1,54 +1,58 @@
 {
-   "description": "Easily add great articles, pictures and videos to your Buffer and we automagically share them for you through the day!", 
-   "license": "MPL 1.1/GPL 2.0/LGPL 2.1", 
-   "author": "Buffer", 
-   "version": "2.4.1", 
-   "fullName": "Buffer for Firefox", 
-   "id": "jid1-zUyU7TGKwejAyA", 
-   "name": "buffer",
-   "homepage": "http://bufferapp.com/guides/firefox",
-   "icon": "data/shared/img/Icon.png",
-   "permissions": {"private-browsing": true},
-   "preferences": [{
-        "name": "twitter",
-        "title": "Twitter Integration",
-        "type": "bool",
-        "value": true
+  "description": "Easily add great articles, pictures and videos to your Buffer and we automagically share them for you through the day!",
+  "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
+  "author": "Buffer",
+  "version": "2.5.0",
+  "fullName": "Buffer for Firefox",
+  "id": "jid1-zUyU7TGKwejAyA",
+  "name": "buffer",
+  "homepage": "http://bufferapp.com/guides/firefox",
+  "icon": "data/shared/img/Icon.png",
+  "permissions": {
+    "private-browsing": true
+  },
+  "preferences": [
+    {
+      "name": "twitter",
+      "title": "Twitter Integration",
+      "type": "bool",
+      "value": true
     },
     {
-        "name": "facebook",
-        "title": "Facebook Integration",
-        "type": "bool",
-        "value": true
+      "name": "facebook",
+      "title": "Facebook Integration",
+      "type": "bool",
+      "value": true
     },
     {
-        "name": "reddit",
-        "title": "Reddit Integration",
-        "type": "bool",
-        "value": true
+      "name": "reddit",
+      "title": "Reddit Integration",
+      "type": "bool",
+      "value": true
     },
     {
-        "name": "hacker",
-        "title": "Hacker News Integration",
-        "type": "bool",
-        "value": true
+      "name": "hacker",
+      "title": "Hacker News Integration",
+      "type": "bool",
+      "value": true
     },
     {
-        "name": "key-combo",
-        "title": "Keyboard Shortcut",
-        "type": "string",
-        "value": "alt+b"
+      "name": "key-combo",
+      "title": "Keyboard Shortcut",
+      "type": "string",
+      "value": "alt+b"
     },
     {
-        "name": "key-enable",
-        "title": "Enable Keyboard Shortcut?",
-        "type": "bool",
-        "value": true
+      "name": "key-enable",
+      "title": "Enable Keyboard Shortcut?",
+      "type": "bool",
+      "value": true
     },
     {
-        "name": "image-overlays",
-        "title": "Buffer \"Share Image\" Button",
-        "type": "bool",
-        "value": true
-    }]
+      "name": "image-overlays",
+      "title": "Buffer \"Share Image\" Button",
+      "type": "bool",
+      "value": true
+    }
+  ]
 }
