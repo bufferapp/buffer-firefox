@@ -96,6 +96,14 @@ config.plugin = {
             self.data.url('shared/embeds/buffer-facebook.js')
         ]
     },
+    quora: {
+        scripts: [
+            self.data.url('shared/libs/jquery-1.7.2.min.js'),
+            self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+            self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+            self.data.url('shared/embeds/buffer-quora.js')
+        ]
+    },
     tpccheck: {
         scripts: [
             self.data.url('shared/libs/postmessage.js'),
@@ -263,6 +271,12 @@ var buildOptions = function () {
         "value": simplePrefs.prefs.facebook
     },
     {
+        "name": "quora",
+        "title": "Quora Integration",
+        "type": "bool",
+        "value": simplePrefs.prefs.quora
+    },
+    {
         "name": "reddit",
         "title": "Reddit Integration",
         "type": "bool",
@@ -304,7 +318,7 @@ var buildOptions = function () {
             if( pref.name == 'key-combo' ) {
                 options['buffer.op.key-combo'] = simplePrefs.prefs['key-combo'];
             } else {
-                if( simplePrefs.prefs[pref.name] == false ) {
+                if( simplePrefs.prefs[pref.name] === false ) {
                     options["buffer.op." + pref.name] = "false";
                 } else {
                     options["buffer.op." + pref.name] = pref.name;
@@ -504,6 +518,13 @@ pageMod.PageMod({
     contentScriptFile: config.plugin.facebook.scripts,
     contentScriptWhen: "ready",
     attachTo: ['existing', 'top'], //Attach to existing tabs + no frames (top document)
+    onAttach: embedHandler
+});
+
+pageMod.PageMod({
+    include: '*.quora.com',
+    contentScriptFile: config.plugin.quora.scripts,
+    contentScriptWhen: 'ready',
     onAttach: embedHandler
 });
 
