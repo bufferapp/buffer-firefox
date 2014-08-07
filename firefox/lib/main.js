@@ -349,8 +349,6 @@ var embedHandler = function (worker, scraper) {
     listenForDetailsRequest(worker);
   }
 
-  alert('embedHandler');
-
   worker.port.on('buffer_click', function (embed) {
     // Buffer a tweet
     attachOverlay({embed: embed}, function (overlaydata) {
