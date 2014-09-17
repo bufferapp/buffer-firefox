@@ -1,4 +1,5 @@
 /* jshint node:true, esnext:true */
+/* global CustomizableUI */
 /*
 
 Buffer for Firefox
@@ -411,13 +412,13 @@ var addNavBarButton = function(browserWindow) {
 
 var removeNavBarButton = function(browserWindow, onunload) {
   // Only remove in versions bigger than 29 on onunload.
-  if(versionChecker.compare(appInfo.version, "29") >= 0 && onunload) {
+  if (versionChecker.compare(appInfo.version, "29") >= 0 && onunload) {
     CustomizableUI.destroyWidget(buffer_button_id);
-  }
-  else{
-    var document = browserWindow.document;
-    var navBar = document.getElementById('nav-bar');
-    var btn = document.getElementById(buffer_button_id);
+  } else {
+    var doc = browserWindow.document;
+    if (!doc) return;
+    var navBar = doc.getElementById('nav-bar');
+    var btn = doc.getElementById(buffer_button_id);
     if (navBar && btn) {
        navBar.removeChild(btn);
     }
