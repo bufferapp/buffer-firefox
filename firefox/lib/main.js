@@ -71,6 +71,9 @@ config.plugin = {
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-twitter.js')
+    ],
+    styles: [
+      self.data.url('shared/embeds/buffer-twitter.css')
     ]
   },
   hn: {
@@ -528,6 +531,8 @@ pageMod.PageMod({
   include: '*.twitter.com',
   contentScriptFile: config.plugin.twitter.scripts,
   contentScriptWhen: "ready",
+  contentStyleFile: config.plugin.twitter.styles,
+  // contentStyle: '.icon-buffer { background-color: orange; }',
   onAttach: embedHandler
 });
 
