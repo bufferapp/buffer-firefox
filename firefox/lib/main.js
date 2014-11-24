@@ -499,6 +499,7 @@ var settingsHandler = function(worker) {
 // Embeds
 pageMod.PageMod({
   include: '*',
+  attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.hotkey.scripts,
   contentScriptWhen: "ready",
   onAttach: embedHandler
@@ -506,6 +507,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
+  attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.hoverButton.scripts,
   contentScriptWhen: "ready",
   onAttach: embedHandler
@@ -513,6 +515,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
+  attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.tpccheck.scripts,
   contentScriptWhen: "ready",
   onAttach: tpcEmbedHandler
