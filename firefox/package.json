@@ -6,7 +6,7 @@
   "fullName": "Buffer for Firefox",
   "id": "jid1-zUyU7TGKwejAyA",
   "name": "buffer",
-  "homepage": "http://bufferapp.com/guides/firefox",
+  "homepage": "https://bufferapp.com/guides/firefox",
   "icon": "data/shared/img/Icon.png",
   "permissions": {
     "private-browsing": true
