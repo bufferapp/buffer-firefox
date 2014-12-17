@@ -20,7 +20,7 @@ var ss          = require("sdk/simple-storage");
 var simplePrefs = require("sdk/simple-prefs");
 var { Hotkey }  = require("sdk/hotkeys");
 var cm          = require("sdk/context-menu");
-var { Cc, Ci, Cm, Cr, Cu }  = require('chrome');
+var { Cc, Ci, Cu }  = require('chrome');
 var mediator    = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
 var bufferSrc   = require('bufferSrc');
 var tpc_disabled = false;
@@ -489,13 +489,6 @@ var settingsHandler = function(worker) {
   });
 
 };
-
-// var windowUtils = require('sdk/window/utils');
-    
-    // windowUtils
-    //   .getMostRecentBrowserWindow()
-    //   .BrowserOpenAddonsMgr(
-    //     '‌​addons://detail/' + encodeURIComponent(self.id) + '/preferences');
 
 // Embeds
 pageMod.PageMod({
