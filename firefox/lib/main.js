@@ -56,7 +56,7 @@ config.plugin = {
   },
   overlay: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('shared/libs/postmessage.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
@@ -67,7 +67,7 @@ config.plugin = {
   },
   twitter: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-twitter.js')
@@ -78,7 +78,7 @@ config.plugin = {
   },
   hn: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-hn.js')
@@ -86,7 +86,7 @@ config.plugin = {
   },
   reddit: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-reddit.js')
@@ -94,7 +94,7 @@ config.plugin = {
   },
   facebook: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-facebook.js')
@@ -102,7 +102,7 @@ config.plugin = {
   },
   quora: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-quora.js')
@@ -118,12 +118,13 @@ config.plugin = {
   hotkey: {
     scripts: [
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+      self.data.url('shared/libs/keymaster.js'),
       self.data.url('shared/embeds/buffer-hotkey.js')
     ]
   },
   hoverButton: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-hover-button.js')
@@ -131,7 +132,7 @@ config.plugin = {
   },
   scraper: {
     scripts: [
-      self.data.url('shared/libs/jquery-1.7.2.min.js'),
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('shared/embeds/buffer-overlay-scraper.js')
     ]
