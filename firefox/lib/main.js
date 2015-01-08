@@ -128,7 +128,7 @@ config.plugin = {
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-hover-button.js')
-    ]  
+    ]
   },
   scraper: {
     scripts: [
@@ -176,7 +176,7 @@ var listenForDetailsRequest = function (worker) {
 };
 // Overlay
 var attachOverlay = function (data, cb) {
-  
+
   if( typeof data === 'function' ) cb = data;
   if( ! data ) data = {};
   if( ! cb ) cb = function () {};
@@ -189,7 +189,7 @@ var attachOverlay = function (data, cb) {
   overlayWorker = worker;
 
   listenForDataRequest(worker);
-  
+
   worker.port.on('buffer_done', function (overlayData) {
     worker.destroy();
     cb(overlayData);
@@ -199,7 +199,7 @@ var attachOverlay = function (data, cb) {
   data.version = config.plugin.version;
   if( data.embed.placement ) data.placement = data.embed.placement;
 
-  var windows = tabsUtils.getAllTabContentWindows(); 
+  var windows = tabsUtils.getAllTabContentWindows();
   var window  = windows[tabs.activeTab.index];
 
   if(tpc_disabled) {
@@ -341,14 +341,19 @@ var buildOptions = function () {
 
 var tpcEmbedHandler = function(worker) {
   worker.port.on('buffer_tpc_disabled', function() {
-    tpc_disabled = true; 
+    tpc_disabled = true;
   });
 };
 
 var embedHandler = function (worker, scraper) {
 
   listenForDataRequest(worker);
-  
+
+  // Firefox get file async
+  worker.port.on('buffer_get_file', function (file) {
+    worker.port.emit('buffer_file_url', self.data.url(file));
+  });
+
   if( scraper ) {
     scraperWorker = worker;
     listenForDetailsRequest(worker);
@@ -426,7 +431,7 @@ var removeNavBarButton = function(browserWindow, onunload) {
     if (navBar && btn) {
        navBar.removeChild(btn);
     }
-  } 
+  }
 };
 
 // Navigation bar icon
@@ -456,7 +461,7 @@ exports.main = function(options, callbacks) {
   // Add listeners
   mediator.addListener(windowListener);
 };
- 
+
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
   // this document is an XUL document
@@ -529,7 +534,6 @@ pageMod.PageMod({
   contentScriptFile: config.plugin.twitter.scripts,
   contentScriptWhen: "ready",
   contentStyleFile: config.plugin.twitter.styles,
-  // contentStyle: '.icon-buffer { background-color: orange; }',
   onAttach: embedHandler
 });
 
