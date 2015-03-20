@@ -506,6 +506,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
+  exclude: ['.xml'],
   attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.hoverButton.scripts,
   contentScriptWhen: "ready",
@@ -514,6 +515,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
+  exclude: ['.xml'],
   attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.tpccheck.scripts,
   contentScriptWhen: "ready",
