@@ -10,7 +10,8 @@ Authors: Joel Gascoigne         Tom Ashworth
 */
 
 // Plugin APIs
-var widgets     = require("sdk/widget");
+var system      = require('sdk/system');
+var buttons     = require('sdk/ui/button/action');
 var tabs        = require("sdk/tabs");
 var tabsUtils   = require("sdk/tabs/utils");
 var self        = require("sdk/self");
@@ -20,13 +21,13 @@ var ss          = require("sdk/simple-storage");
 var simplePrefs = require("sdk/simple-prefs");
 var { Hotkey }  = require("sdk/hotkeys");
 var cm          = require("sdk/context-menu");
-var { Cc, Ci, Cu }  = require('chrome');
-var mediator    = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+
 var bufferSrc   = require('bufferSrc');
+
 var tpc_disabled = false;
 
-var appInfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
-var versionChecker = Cc["@mozilla.org/xpcom/version-comparator;1"].getService(Ci.nsIVersionComparator);
+const FIREFOX_VERSION = parseInt(system.version.split('.')[0]);
+
 
 // Configuration
 var config = {};
@@ -370,26 +371,63 @@ var embedHandler = function (worker, scraper) {
   });
 };
 
+// This is not to be used beyond FF 29
+var getMediator = function() {
+  var { Cc, Ci }  = require('chrome');
+  return Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
+}
+var getMostRecentWindow = function(mediator) {
+  return mediator.getMostRecentWindow('navigator:browser');
+}
+
+
 var buffer_button_id  = "buffer-button";
 
-var addNavBarButton = function(browserWindow) {
-  if(versionChecker.compare(appInfo.version, "29") >= 0) {
-    CustomizableUI.createWidget({
-      id : buffer_button_id,
-      defaultArea : CustomizableUI.AREA_NAVBAR,
-      label : "Buffer",
-      tooltiptext : "Buffer This Page",
-      onCommand : function(aEvent) {
-        attachOverlay({placement: 'toolbar'});
+// var button = buttons.ActionButton({
+//   id: buffer_button_id,
+//   label: 'Buffer FIRST',
+//   icon: {
+//     '16': './icons/icon-16.png',
+//     '32': './icons/icon-32.png',
+//     '64': './icons/icon-64.png'
+//   },
+//   onClick: function() {
+//     attachOverlay({ placement: 'toolbar' });
+//   }
+// });
+
+var addNavBarButton = function() {
+
+  var button;
+
+  if (FIREFOX_VERSION >= 29) {
+
+    button = buttons.ActionButton({
+      id: buffer_button_id,
+      label: 'Buffer ' + FIREFOX_VERSION,
+      icon: {
+        '16': './icons/icon-16.png',
+        '32': './icons/icon-32.png',
+        '64': './icons/icon-64.png'
+      },
+      onClick: function() {
+        attachOverlay({ placement: 'toolbar' });
       }
     });
-  }
-  else{
-    var button = widgets.Widget({
+
+  } else {
+
+    var mediator = getMediator();
+    var browserWindow = getMostRecentWindow(mediator);
+
+    var widgets = require("sdk/widget");
+
+    button = widgets.Widget({
       id: buffer_button_id,
       label: config.plugin.label,
       contentURL: config.plugin.icon.static
     });
+
     button.on('click', function () {
       var prev = config.plugin.icon.loading;
       button.contentURL = config.plugin.icon.loading;
@@ -416,14 +454,21 @@ var addNavBarButton = function(browserWindow) {
       attachOverlay({placement: 'toolbar'});
     }, false);
     navBar.appendChild(btn);
+
+    // Add listeners
+    mediator.addListener(windowListener);
   }
 };
 
-var removeNavBarButton = function(browserWindow, onunload) {
+var removeNavBarButton = function(onunload) {
   // Only remove in versions bigger than 29 on onunload.
-  if (versionChecker.compare(appInfo.version, "29") >= 0 && onunload) {
+  if (FIREFOX_VERSION >= 29 && onunload) {
+
     CustomizableUI.destroyWidget(buffer_button_id);
+
   } else {
+    var mediator = getMediator();
+    var browserWindow = getMostRecentWindow(mediator);
     var doc = browserWindow.document;
     if (!doc) return;
     var navBar = doc.getElementById('nav-bar');
@@ -431,50 +476,29 @@ var removeNavBarButton = function(browserWindow, onunload) {
     if (navBar && btn) {
        navBar.removeChild(btn);
     }
+    mediator.removeListener(windowListener);
   }
 };
 
 // Navigation bar icon
 // exports.main is called when extension is installed or re-enabled
 exports.main = function(options, callbacks) {
-  if(versionChecker.compare(appInfo.version, "29") >= 0) {
-    Cu.import("resource:///modules/CustomizableUI.jsm");
-
-    var io =
-      Cc["@mozilla.org/network/io-service;1"].
-      getService(Ci.nsIIOService);
-
-    var style_sheet =
-      Cc["@mozilla.org/content/style-sheet-service;1"].
-      getService(Ci.nsIStyleSheetService);
-
-    // the 'style' directive isn't supported in chrome.manifest for bootstrapped
-    // extensions, so this is the manual way of doing the same.
-    var _uri = io.newURI("chrome://buffer-button/skin/toolbar.css", null, null);
-    style_sheet.loadAndRegisterSheet(_uri, style_sheet.USER_SHEET);
-  }
-
-  // for the current window
-  var browserWindow = mediator.getMostRecentWindow('navigator:browser');
-  addNavBarButton(browserWindow);
-
-  // Add listeners
-  mediator.addListener(windowListener);
+  addNavBarButton();
 };
 
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
   // this document is an XUL document
-  var browserWindow = mediator.getMostRecentWindow('navigator:browser');
-  removeNavBarButton(browserWindow, true);
-  mediator.removeListener(windowListener);
+  removeNavBarButton(true);
 };
 
 // handle new windows
 var windowListener = {
   onOpenWindow: function(aWindow) {
+    var { Ci }  = require('chrome');
     // Wait for the window to finish loading
-    var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
+    var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                      .getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
     addNavBarButton(domWindow);
     domWindow.addEventListener("load", function() {
       domWindow.removeEventListener("load", arguments.callee, false);
