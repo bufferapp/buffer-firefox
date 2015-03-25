@@ -1,5 +1,4 @@
 /* jshint node:true, esnext:true */
-/* global CustomizableUI */
 /*
 
 Buffer for Firefox
@@ -16,13 +15,11 @@ var tabs        = require("sdk/tabs");
 var tabsUtils   = require("sdk/tabs/utils");
 var self        = require("sdk/self");
 var pageMod     = require("sdk/page-mod");
-var selection   = require("sdk/selection");
 var ss          = require("sdk/simple-storage");
 var simplePrefs = require("sdk/simple-prefs");
-var { Hotkey }  = require("sdk/hotkeys");
 var cm          = require("sdk/context-menu");
-
 var bufferSrc   = require('bufferSrc');
+// var legacy      = require('legacy');
 
 var tpc_disabled = false;
 
@@ -383,19 +380,6 @@ var getMostRecentWindow = function(mediator) {
 
 var buffer_button_id  = "buffer-button";
 
-// var button = buttons.ActionButton({
-//   id: buffer_button_id,
-//   label: 'Buffer FIRST',
-//   icon: {
-//     '16': './icons/icon-16.png',
-//     '32': './icons/icon-32.png',
-//     '64': './icons/icon-64.png'
-//   },
-//   onClick: function() {
-//     attachOverlay({ placement: 'toolbar' });
-//   }
-// });
-
 var addNavBarButton = function() {
 
   var button;
@@ -461,10 +445,10 @@ var addNavBarButton = function() {
 };
 
 var removeNavBarButton = function(onunload) {
-  // Only remove in versions bigger than 29 on onunload.
+
   if (FIREFOX_VERSION >= 29 && onunload) {
 
-    CustomizableUI.destroyWidget(buffer_button_id);
+    // do nothing
 
   } else {
     var mediator = getMediator();
@@ -482,9 +466,12 @@ var removeNavBarButton = function(onunload) {
 
 // Navigation bar icon
 // exports.main is called when extension is installed or re-enabled
-exports.main = function(options, callbacks) {
-  addNavBarButton();
-};
+// exports.main = function(options, callbacks) {
+//   addNavBarButton();
+// };
+
+
+addNavBarButton();
 
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
