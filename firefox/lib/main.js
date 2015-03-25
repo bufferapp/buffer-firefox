@@ -11,150 +11,36 @@ Authors: Joel Gascoigne         Tom Ashworth
 // Plugin APIs
 var system      = require('sdk/system');
 var buttons     = require('sdk/ui/button/action');
-var tabs        = require("sdk/tabs");
-var tabsUtils   = require("sdk/tabs/utils");
-var self        = require("sdk/self");
-var pageMod     = require("sdk/page-mod");
-var ss          = require("sdk/simple-storage");
-var simplePrefs = require("sdk/simple-prefs");
-var cm          = require("sdk/context-menu");
+var tabs        = require('sdk/tabs');
+var tabsUtils   = require('sdk/tabs/utils');
+var self        = require('sdk/self');
+var pageMod     = require('sdk/page-mod');
+var ss          = require('sdk/simple-storage');
+var cm          = require('sdk/context-menu');
+
+var config      = require('config');
 var bufferSrc   = require('bufferSrc');
-// var legacy      = require('legacy');
+var prefs       = require('prefs');
+var legacy      = require('legacy');
 
 var tpc_disabled = false;
 
 const FIREFOX_VERSION = parseInt(system.version.split('.')[0]);
+const BUFFER_BUTTON_ID = 'buffer-button';
 
-
-// Configuration
-var config = {};
-config.plugin = {
-  label: "Buffer This Page",
-  icon: {
-    static:         self.data.url('firefox/img/buffer-icon.png'),
-    hover:          self.data.url('firefox/img/buffer-icon-hover.png'),
-    loading:        self.data.url('firefox/img/buffer-icon-loading.png'),
-    small:          self.data.url('firefox/img/buffer-icon-small.png'),
-    small_loading:  self.data.url('firefox/img/buffer-icon-small-loading.png')
-  },
-  guide: 'http://bufferapp.com/guides/firefox/installed',
-  version: self.version,
-  menu: {
-    page: {
-      label: "Buffer This Page",
-      scripts: [self.data.url('firefox/menu/buffer-page.js')]
-    },
-    selection: {
-      label: "Buffer Selected Text"
-    },
-    image: {
-      label: "Buffer This Image",
-      scripts: [self.data.url('firefox/menu/buffer-image.js')]
-    }
-  },
-  overlay: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('shared/libs/postmessage.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-scraper.js'),
-      self.data.url('shared/buffer-overlay.js'),
-      self.data.url('firefox/buffer-firefox.js')
-    ]
-  },
-  twitter: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-twitter.js')
-    ],
-    styles: [
-      self.data.url('shared/embeds/buffer-twitter.css')
-    ]
-  },
-  hn: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-hn.js')
-    ]
-  },
-  reddit: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-reddit.js')
-    ]
-  },
-  facebook: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-facebook.js')
-    ]
-  },
-  quora: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-quora.js')
-    ]
-  },
-  tpccheck: {
-    scripts: [
-      self.data.url('shared/libs/postmessage.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('shared/embeds/buffer-tpc-check.js')
-    ]
-  },
-  hotkey: {
-    scripts: [
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('shared/libs/keymaster.js'),
-      self.data.url('shared/embeds/buffer-hotkey.js')
-    ]
-  },
-  hoverButton: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
-      self.data.url('shared/embeds/buffer-hover-button.js')
-    ]
-  },
-  scraper: {
-    scripts: [
-      self.data.url('shared/libs/jquery-2.1.1.min.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('shared/embeds/buffer-overlay-scraper.js')
-    ]
-  },
-  bufferapp: {
-    scripts: [
-      self.data.url('shared/buffer-install-check.js'),
-      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('shared/buffer-extension-settings.js')
-    ]
-  }
-};
 
 /**
  * Workers
  */
-var overlayWorker, scraperWorker;
+var overlayWorker;
+var scraperWorker;
 
 var listenForDataRequest = function (worker) {
   worker.port.on("buffer_get_data", function (file) {
     worker.port.emit("buffer_data_url", self.data.url(file));
   });
 
-  worker.port.emit("buffer_options", buildOptions());
+  worker.port.emit("buffer_options", prefs.buildOptions());
 };
 
 var listenForDetailsRequest = function (worker) {
@@ -172,7 +58,10 @@ var listenForDetailsRequest = function (worker) {
   });
 
 };
-// Overlay
+
+/**
+ * Attach the iframe overlay
+ */
 var attachOverlay = function (data, cb) {
 
   if( typeof data === 'function' ) cb = data;
@@ -218,7 +107,9 @@ if( ! ss.storage.run ) {
   });
 }
 
-// Context menu
+/**
+ * Context menu
+ */
 var menu = {};
 menu.page = cm.Item({
   label: config.plugin.menu.page.label,
@@ -256,86 +147,6 @@ menu.image = cm.Item({
   }
 });
 
-// Options & Preferences
-
-/**
- * Turns the preferences object into something useful for the content scripts
- */
-var buildOptions = function () {
-
-  var prefs = [{
-    "name": "twitter",
-    "title": "Twitter Integration",
-    "type": "bool",
-    "value": simplePrefs.prefs.twitter
-  },
-  {
-    "name": "facebook",
-    "title": "Facebook Integration",
-    "type": "bool",
-    "value": simplePrefs.prefs.facebook
-  },
-  {
-    "name": "quora",
-    "title": "Quora Integration",
-    "type": "bool",
-    "value": simplePrefs.prefs.quora
-  },
-  {
-    "name": "reddit",
-    "title": "Reddit Integration",
-    "type": "bool",
-    "value": simplePrefs.prefs.reddit
-  },
-  {
-    "name": "hacker",
-    "title": "Hacker News Integration",
-    "type": "bool",
-    "value": simplePrefs.prefs.hacker
-  },
-  {
-    "name": "key-combo",
-    "title": "Keyboard Shortcut",
-    "type": "string",
-    "value": simplePrefs.prefs['key-combo']
-  },
-  {
-    "name": "key-enable",
-    "title": "Enable Keyboard Shortcut?",
-    "type": "bool",
-    "value": simplePrefs.prefs['key-enable']
-  },
-  {
-    "name": "image-overlays",
-    "title": "Buffer \"Share Image\" Button",
-    "type": "bool",
-    "value": simplePrefs.prefs['image-overlays']
-  }];
-
-  var options = {}, pref;
-
-  // Use "false" if false, and use the item name if true.
-  // Stupid, yep, but it made sense in Chrome.
-  // TODO: Make this less stupid.
-  for( var i in prefs ) {
-    if( prefs.hasOwnProperty(i) ) {
-      pref = prefs[i];
-      if( pref.name == 'key-combo' ) {
-        options['buffer.op.key-combo'] = simplePrefs.prefs['key-combo'];
-      } else {
-        if( simplePrefs.prefs[pref.name] === false ) {
-          options["buffer.op." + pref.name] = "false";
-        } else {
-          options["buffer.op." + pref.name] = pref.name;
-        }
-      }
-      // console.log(pref.name, options["buffer.op." + pref.name]);
-    }
-  }
-
-  return options;
-
-};
 
 var tpcEmbedHandler = function(worker) {
   worker.port.on('buffer_tpc_disabled', function() {
@@ -368,26 +179,13 @@ var embedHandler = function (worker, scraper) {
   });
 };
 
-// This is not to be used beyond FF 29
-var getMediator = function() {
-  var { Cc, Ci }  = require('chrome');
-  return Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator);
-}
-var getMostRecentWindow = function(mediator) {
-  return mediator.getMostRecentWindow('navigator:browser');
-}
-
-
-var buffer_button_id  = "buffer-button";
 
 var addNavBarButton = function() {
 
-  var button;
-
   if (FIREFOX_VERSION >= 29) {
 
-    button = buttons.ActionButton({
-      id: buffer_button_id,
+    var button = buttons.ActionButton({
+      id: BUFFER_BUTTON_ID,
       label: 'Buffer ' + FIREFOX_VERSION,
       icon: {
         '16': './icons/icon-16.png',
@@ -401,102 +199,23 @@ var addNavBarButton = function() {
 
   } else {
 
-    var mediator = getMediator();
-    var browserWindow = getMostRecentWindow(mediator);
-
-    var widgets = require("sdk/widget");
-
-    button = widgets.Widget({
-      id: buffer_button_id,
-      label: config.plugin.label,
-      contentURL: config.plugin.icon.static
+    legacy.addNavBarButton(function onButtonClick() {
+      attachOverlay({ placement: 'toolbar' });
     });
 
-    button.on('click', function () {
-      var prev = config.plugin.icon.loading;
-      button.contentURL = config.plugin.icon.loading;
-      attachOverlay({placement: 'toolbar'}, function() {
-        button.contentURL = config.plugin.icon.static;
-      });
-    });
-
-    var document = browserWindow.document;
-    var navBar = document.getElementById('nav-bar');
-    if (!navBar) {
-      return;
-    }
-    var btn = document.createElement('toolbarbutton');
-    btn.setAttribute('id', buffer_button_id);
-    btn.setAttribute('type', 'button');
-    // the toolbarbutton-1 class makes it look like a traditional button
-    btn.setAttribute('class', 'toolbarbutton-1');
-    btn.setAttribute('image', config.plugin.icon.small);
-    // this text will be shown when the toolbar is set to text or text and icons
-    btn.setAttribute('label', config.plugin.label);
-    btn.addEventListener('click', function() {
-      // Go go go
-      attachOverlay({placement: 'toolbar'});
-    }, false);
-    navBar.appendChild(btn);
-
-    // Add listeners
-    mediator.addListener(windowListener);
   }
 };
-
-var removeNavBarButton = function(onunload) {
-
-  if (FIREFOX_VERSION >= 29 && onunload) {
-
-    // do nothing
-
-  } else {
-    var mediator = getMediator();
-    var browserWindow = getMostRecentWindow(mediator);
-    var doc = browserWindow.document;
-    if (!doc) return;
-    var navBar = doc.getElementById('nav-bar');
-    var btn = doc.getElementById(buffer_button_id);
-    if (navBar && btn) {
-       navBar.removeChild(btn);
-    }
-    mediator.removeListener(windowListener);
-  }
-};
-
-// Navigation bar icon
-// exports.main is called when extension is installed or re-enabled
-// exports.main = function(options, callbacks) {
-//   addNavBarButton();
-// };
 
 
 addNavBarButton();
 
 // exports.onUnload is called when Firefox starts and when the extension is disabled or uninstalled
 exports.onUnload = function(reason) {
-  // this document is an XUL document
-  removeNavBarButton(true);
+  if (FIREFOX_VERSION < 29) {
+    legacy.addNavBarButton();
+  }
 };
 
-// handle new windows
-var windowListener = {
-  onOpenWindow: function(aWindow) {
-    var { Ci }  = require('chrome');
-    // Wait for the window to finish loading
-    var domWindow = aWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-                      .getInterface(Ci.nsIDOMWindowInternal || Ci.nsIDOMWindow);
-    addNavBarButton(domWindow);
-    domWindow.addEventListener("load", function() {
-      domWindow.removeEventListener("load", arguments.callee, false);
-      addNavBarButton(domWindow);
-    }, false);
-  },
-  onCloseWindow: function(aWindow) {
-    removeNavBarButton(aWindow);
-  },
-  onWindowTitleChange: function(aWindow, aTitle) { }
-};
 
 var settingsHandler = function(worker) {
 
