@@ -1,18 +1,19 @@
-var document; 
-var window; 
+var doc;
+var win;
+
 // Build that overlay!
 // Triggered by code working from the button up...
 var bufferOverlay = function(data, config, doneCallback) {
 
-    
+
     if( ! doneCallback ) doneCallback = function () {};
     if( ! config ) return;
-    
+
     // Put together a query string for the iframe
     var buildSrc = function() {
         var src = config.overlay.endpoint;
         if( data.local ) src = config.overlay.localendpoint;
-        
+
         // Add button attributes
         var first = true, count = 0;
         for(var i=0, l=config.attributes.length; i < l; i++) {
@@ -23,35 +24,35 @@ var bufferOverlay = function(data, config, doneCallback) {
             if( count > 1 ) src += '&';
             src += a.name + '=' + a.encode(data[a.name]);
         }
-        
+
         return src;
     };
-    
-    var src = buildSrc();
-    window.open(src, null, 'width=850,height=600');
 
-    
+    var src = buildSrc();
+    win.open(src, null, 'width=850,height=600');
+
+
 };
 
 // bufferData is triggered by the buffer_click listener in
 // the buffer-browser-embed file, where it's passed a port
 // to communicate with the extension and data sent from the
 // background page.
-exports.bufferData = function (port, postData, win) {
+exports.bufferData = function (port, postData, window) {
 
 
-    window = win; 
-    document = window.document;
+    win = window;
+    doc = window.document;
 
-    if (window.top !== window) {
+    if (win.top !== win) {
         return;
     }
 
     var config = {};
     config.local = false;
     config.googleReader = false;
-    var segments = window.location.pathname.split('/');
-    if( window.location.host.indexOf("google") != -1 && segments[1] == "reader" ) config.googleReader = true;
+    var segments = win.location.pathname.split('/');
+    if( win.location.host.indexOf("google") != -1 && segments[1] == "reader" ) config.googleReader = true;
 
     // Specification for gathering data for the overlay
     config.attributes = [
@@ -59,7 +60,7 @@ exports.bufferData = function (port, postData, win) {
             name: "url",
             get: function (cb) {
                 if( ! config.googleReader ) {
-                    cb(window.location.href);
+                    cb(win.location.href);
                 } else {
                     var href = $("#current-entry .entry-container a.entry-title-link").attr('href');
                     if( ! href ) href = $('.entry').first().find(".entry-container a.entry-title-link").attr('href');
@@ -77,10 +78,10 @@ exports.bufferData = function (port, postData, win) {
                     var text = $("#current-entry .entry-container a.entry-title-link").text();
                     if( ! text ) text = $('.entry').first().find(".entry-container a.entry-title-link").text();
                     cb(text);
-                } else if(document.getSelection() != false) {
-                    cb('"' + document.getSelection().toString() + '"');
+                } else if(doc.getSelection() != false) {
+                    cb('"' + doc.getSelection().toString() + '"');
                 } else {
-                    cb(document.title);
+                    cb(doc.title);
                 }
             },
             encode: function (val) {
@@ -144,7 +145,7 @@ exports.bufferData = function (port, postData, win) {
         {
             name: "local",
             get: function (cb) {
-                cb(config.local);  
+                cb(config.local);
             },
             encode: function (val) {
                 return encodeURIComponent(val);
@@ -153,7 +154,7 @@ exports.bufferData = function (port, postData, win) {
         {
             name: "version",
             get: function (cb) {
-                cb(postData.version);  
+                cb(postData.version);
             },
             encode: function (val) {
                 return encodeURIComponent(val);
@@ -172,8 +173,8 @@ exports.bufferData = function (port, postData, win) {
         }
     ];
     config.overlay = {
-        endpoint: (config.local ? 'http:' : document.location.protocol) + '//bufferapp.com/add/',
-        localendpoint: (config.local ? 'http:' : document.location.protocol) + '//local.bufferapp.com/add/',
+        endpoint: (config.local ? 'http:' : doc.location.protocol) + '//bufferapp.com/add/',
+        localendpoint: (config.local ? 'http:' : doc.location.protocol) + '//local.bufferapp.com/add/',
         getCSS: function () { return "border:none;height:100%;width:100%;position:fixed!important;z-index:99999999;top:0;left:0;display:block!important;max-width:100%!important;max-height:100%!important;padding:0!important;"; }
     };
 
@@ -235,6 +236,6 @@ exports.bufferData = function (port, postData, win) {
     // gathered all the neccessaries
     getData(createOverlay);
 	port.emit('buffer_message_bind')
-    
+
 };
 
