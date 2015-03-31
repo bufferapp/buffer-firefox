@@ -14,7 +14,7 @@ exports.plugin = {
     small:          self.data.url('firefox/img/buffer-icon-small.png'),
     small_loading:  self.data.url('firefox/img/buffer-icon-small-loading.png')
   },
-  guide: 'http://bufferapp.com/guides/firefox/installed',
+  guide: 'http://buffer.com/guides/firefox/installed',
   version: self.version,
   menu: {
     page: {

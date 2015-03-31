@@ -252,8 +252,9 @@ pageMod.PageMod({
   onAttach: tpcEmbedHandler
 });
 
+//NOTE - Scraper is currently disabled - MAR 2015
 pageMod.PageMod({
-  include: '*.bufferapp.com',
+  include: ['*.buffer.com', '*.bufferapp.com'],
   contentScriptFile: config.plugin.scraper.scripts,
   contentScriptWhen: "ready",
   onAttach: function(worker) {
@@ -299,7 +300,7 @@ pageMod.PageMod({
 });
 
 pageMod.PageMod({
-  include: '*.bufferapp.com',
+  include: ['*.buffer.com', '*.bufferapp.com'],
   contentScriptFile: config.plugin.bufferapp.scripts,
   contentScriptWhen: "ready",
   contentScript: 'bufferMarkOurSite("' + config.plugin.version + '")',

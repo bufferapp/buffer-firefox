@@ -173,8 +173,8 @@ exports.bufferData = function (port, postData, window) {
         }
     ];
     config.overlay = {
-        endpoint: (config.local ? 'http:' : doc.location.protocol) + '//bufferapp.com/add/',
-        localendpoint: (config.local ? 'http:' : doc.location.protocol) + '//local.bufferapp.com/add/',
+        endpoint: (config.local ? 'http:' : doc.location.protocol) + '//buffer.com/add/',
+        localendpoint: (config.local ? 'http:' : doc.location.protocol) + '//local.buffer.com/add/',
         getCSS: function () { return "border:none;height:100%;width:100%;position:fixed!important;z-index:99999999;top:0;left:0;display:block!important;max-width:100%!important;max-height:100%!important;padding:0!important;"; }
     };
 
