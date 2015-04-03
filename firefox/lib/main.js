@@ -264,9 +264,18 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*.twitter.com',
+  exclude: ['*.tweetdeck.twitter.com'],
   contentScriptFile: config.plugin.twitter.scripts,
   contentScriptWhen: "ready",
   contentStyleFile: config.plugin.twitter.styles,
+  onAttach: embedHandler
+});
+
+pageMod.PageMod({
+  include: '*.tweetdeck.twitter.com',
+  contentScriptFile: config.plugin.tweetdeck.scripts,
+  contentScriptWhen: "ready",
+  contentStyleFile: config.plugin.tweetdeck.styles,
   onAttach: embedHandler
 });
 

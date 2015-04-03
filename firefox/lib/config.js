@@ -51,6 +51,17 @@ exports.plugin = {
       self.data.url('shared/embeds/buffer-twitter.css')
     ]
   },
+  tweetdeck: {
+    scripts: [
+      self.data.url('shared/libs/jquery-2.1.1.min.js'),
+      self.data.url('firefox/buffer-firefox-port-wrapper.js'),
+      self.data.url('firefox/buffer-firefox-data-wrapper.js'),
+      self.data.url('shared/embeds/buffer-tweetdeck.js')
+    ],
+    styles: [
+      self.data.url('shared/embeds/buffer-tweetdeck.css')
+    ]
+  },
   hn: {
     scripts: [
       self.data.url('shared/libs/jquery-2.1.1.min.js'),
