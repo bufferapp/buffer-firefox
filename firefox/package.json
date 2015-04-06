@@ -19,6 +19,12 @@
       "value": true
     },
     {
+      "name": "tweetdeck",
+      "title": "Tweetdeck Integration",
+      "type": "bool",
+      "value": true
+    },
+    {
       "name": "facebook",
       "title": "Facebook Integration",
       "type": "bool",

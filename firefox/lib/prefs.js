@@ -18,6 +18,12 @@ exports.buildOptions = function () {
       value: simplePrefs.prefs.twitter
     },
     {
+      name: 'tweetdeck',
+      title: 'Tweetdeck Integration',
+      type: 'bool',
+      value: simplePrefs.prefs.tweetdeck
+    },
+    {
       name: 'facebook',
       title: 'Facebook Integration',
       type: 'bool',
@@ -80,22 +86,6 @@ exports.buildOptions = function () {
     }
 
   });
-
-
-  // for( var i in prefs ) {
-  //   if( prefs.hasOwnProperty(i) ) {
-  //     pref = prefs[i];
-  //     if( pref.name == 'key-combo' ) {
-  //       options['buffer.op.key-combo'] = simplePrefs.prefs['key-combo'];
-  //     } else {
-  //       if( simplePrefs.prefs[pref.name] === false ) {
-  //         options['buffer.op.' + pref.name] = 'false';
-  //       } else {
-  //         options['buffer.op.' + pref.name] = pref.name;
-  //       }
-  //     }
-  //   }
-  // }
 
   return options;
 
