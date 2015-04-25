@@ -2,7 +2,7 @@
   "description": "Easily add great articles, pictures and videos to your Buffer and we automagically share them for you through the day!",
   "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
   "author": "Buffer",
-  "version": "2.10.3",
+  "version": "2.11.0",
   "fullName": "Buffer",
   "id": "jid1-zUyU7TGKwejAyA",
   "name": "buffer",
@@ -45,6 +45,12 @@
     {
       "name": "hacker",
       "title": "Hacker News Integration",
+      "type": "bool",
+      "value": true
+    },
+    {
+      "name": "pinterest",
+      "title": "Pinterest Integration",
       "type": "bool",
       "value": true
     },

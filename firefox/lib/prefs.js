@@ -48,6 +48,12 @@ exports.buildOptions = function () {
       value: simplePrefs.prefs.hacker
     },
     {
+      name: 'pinterest',
+      title: 'Pinterest Integration',
+      type: 'bool',
+      value: simplePrefs.prefs.pinterest
+    },
+    {
       name: 'key-combo',
       title: 'Keyboard Shortcut',
       type: 'string',

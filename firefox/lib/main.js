@@ -280,6 +280,14 @@ pageMod.PageMod({
 });
 
 pageMod.PageMod({
+  include: '*.pinterest.com',
+  contentScriptFile: config.plugin.pinterest.scripts,
+  contentScriptWhen: "ready",
+  contentStyleFile: config.plugin.pinterest.styles,
+  onAttach: embedHandler
+});
+
+pageMod.PageMod({
   include: '*.facebook.com',
   contentScriptFile: config.plugin.facebook.scripts,
   contentScriptWhen: "ready",
