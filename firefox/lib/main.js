@@ -225,9 +225,13 @@ var settingsHandler = function(worker) {
 
 };
 
+// Injecting scripts breaks Firefox's XML file viewer
+var excludeXMLPattern = /.*\.xml/;
+
 // Embeds
 pageMod.PageMod({
   include: '*',
+  exclude: [excludeXMLPattern],
   attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.hotkey.scripts,
   contentScriptWhen: "ready",
@@ -236,7 +240,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
-  exclude: ['*.xml'],
+  exclude: [excludeXMLPattern],
   attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.hoverButton.scripts,
   contentScriptWhen: "ready",
@@ -245,7 +249,7 @@ pageMod.PageMod({
 
 pageMod.PageMod({
   include: '*',
-  exclude: ['*.xml'],
+  exclude: [excludeXMLPattern],
   attachTo: ["existing", "top"],
   contentScriptFile: config.plugin.tpccheck.scripts,
   contentScriptWhen: "ready",
