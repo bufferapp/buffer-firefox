@@ -18,6 +18,7 @@ var pageMod     = require('sdk/page-mod');
 var ss          = require('sdk/simple-storage');
 var cm          = require('sdk/context-menu');
 
+var selection   = require('sdk/selection');
 var config      = require('config');
 var bufferSrc   = require('bufferSrc');
 var prefs       = require('prefs');
@@ -132,6 +133,18 @@ menu.selection = cm.Item({
   onMessage: function (data) {
     if(data == 'buffer_click') {
       attachOverlay({placement: 'menu-selection'});
+    }
+  }
+});
+menu.pablo = cm.Item({
+  label: 'Create Image With Pablo',
+  image: config.plugin.icon.static,
+  context: cm.SelectionContext(),
+  contentScriptFile: config.plugin.menu.page.scripts,
+  contentScriptWhen: 'start',
+  onMessage: function (data) {
+    if(data == 'buffer_click') {
+      tabs.open('https://buffer.com/pablo?text='+selection.text);
     }
   }
 });
