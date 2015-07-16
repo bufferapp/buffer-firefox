@@ -40,6 +40,11 @@ exports.plugin = {
       self.data.url('firefox/buffer-firefox.js')
     ]
   },
+  popup: {
+    scripts: [
+      self.data.url('firefox/buffer-firefox-popup-content-script.js')
+    ]
+  },
   twitter: {
     scripts: [
       self.data.url('shared/libs/jquery-2.1.1.min.js'),

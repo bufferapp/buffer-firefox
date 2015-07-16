@@ -98,6 +98,24 @@ var attachOverlay = function (data, cb) {
      worker.port.emit('buffer_click', data);
   }
 
+  // Listen to overlay asking to open a popup from privileged code
+  // to bypass CSP on some sites
+  worker.port.on('buffer_open_popup', function(url) {
+    tabs.open({
+      url: url,
+      inNewWindow: true,
+
+      onLoad: function(tab) {
+        var worker = tab.attach({
+          contentScriptFile: config.plugin.popup.scripts
+        });
+
+        worker.port.on("buffer_close_popup", function() {
+          tab.close();
+        })
+      }
+    });
+  });
 };
 
 // Show guide on first run
