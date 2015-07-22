@@ -100,6 +100,9 @@ exports.plugin = {
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
       self.data.url('firefox/buffer-firefox-data-wrapper.js'),
       self.data.url('shared/embeds/buffer-facebook.js')
+    ],
+    styles: [
+      self.data.url('shared/embeds/buffer-facebook.css')
     ]
   },
   quora: {

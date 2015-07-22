@@ -326,6 +326,7 @@ pageMod.PageMod({
   include: '*.facebook.com',
   contentScriptFile: config.plugin.facebook.scripts,
   contentScriptWhen: "ready",
+  contentStyleFile: config.plugin.facebook.styles,
   attachTo: ['existing', 'top'], //Attach to existing tabs + no frames (top document)
   onAttach: embedHandler
 });
