@@ -178,6 +178,17 @@ menu.image = cm.Item({
   }
 });
 
+menu.pablo_image = cm.Item({
+  label: config.plugin.menu.pablo_image.label,
+  image: config.plugin.icon.static,
+  context: cm.SelectorContext('img'),
+  contentScriptFile: config.plugin.menu.image.scripts,
+  contentScriptWhen: 'start',
+  onMessage: function(src) {
+    tabs.open('https://buffer.com/pablo?image=' + encodeURIComponent(src));
+  }
+});
+
 
 var tpcEmbedHandler = function(worker) {
   worker.port.on('buffer_tpc_disabled', function() {

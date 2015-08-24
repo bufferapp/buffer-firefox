@@ -27,6 +27,10 @@ exports.plugin = {
     image: {
       label: 'Buffer This Image',
       scripts: [self.data.url('firefox/menu/buffer-image.js')]
+    },
+    pablo_image: {
+      label: 'Open Image With Pablo',
+      scripts: [self.data.url('firefox/menu/buffer-image.js')]
     }
   },
   overlay: {
