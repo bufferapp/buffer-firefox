@@ -175,7 +175,7 @@ menu.pablo = cm.Item({
   contentScriptWhen: 'start',
   onMessage: function (data) {
     if(data == 'buffer_click') {
-      tabs.open('https://buffer.com/pablo?text='+selection.text);
+      tabs.open('https://buffer.com/pablo?text=' + encodeURIComponent(selection.text));
     }
   }
 });
