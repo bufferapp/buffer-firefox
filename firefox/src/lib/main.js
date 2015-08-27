@@ -1,5 +1,9 @@
 /* jshint node:true, esnext:true */
 /*
+ * Two files are appended at the end of main.js at build time: data/shared/buffermetrics-bg-shim.js and data/shared/buffermetrics.js
+ * This allows to reuse buffermetrics.js throughout buffer-web and extensions and still work with Firefox's module system.
+ */
+/*
 
 Buffer for Firefox
 
