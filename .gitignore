@@ -1,5 +1,6 @@
 *.DS_Store
 *.tmp
 *.log
-firefox/*.xpi
+firefox/src/*.xpi
 buffer.update.rdf
+firefox/dist/*
