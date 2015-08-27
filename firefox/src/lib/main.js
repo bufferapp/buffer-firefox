@@ -2,7 +2,11 @@
 /*
  * Two files are appended at the end of main.js at build time: data/shared/buffermetrics-bg-shim.js and data/shared/buffermetrics.js
  * This allows to reuse buffermetrics.js throughout buffer-web and extensions and still work with Firefox's module system.
+ * isFirefox = true; is a global shared with those scripts.
  */
+var isFirefox = true;
+
+/* globals _bmq */
 /*
 
 Buffer for Firefox
@@ -119,6 +123,11 @@ var attachOverlay = function (data, cb) {
         })
       }
     });
+  });
+
+  // Map content script _bmq calls to the real _bmq here
+  worker.port.on('buffer_tracking', function(payload) {
+    _bmq[payload.methodName].apply(_bmq, payload.args);
   });
 };
 
