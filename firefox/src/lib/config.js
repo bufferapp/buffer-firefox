@@ -43,6 +43,9 @@ exports.plugin = {
       self.data.url('shared/embeds/buffer-scraper.js'),
       self.data.url('shared/buffer-overlay.js'),
       self.data.url('firefox/buffer-firefox.js')
+    ],
+    styles: [
+      self.data.url('shared/buffer-overlay.css')
     ]
   },
   popup: {

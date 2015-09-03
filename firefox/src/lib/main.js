@@ -311,6 +311,13 @@ pageMod.PageMod({
   onAttach: tpcEmbedHandler
 });
 
+pageMod.PageMod({
+  include: '*',
+  exclude: [excludeXMLPattern],
+  attachTo: ['existing', 'top'],
+  contentStyleFile: config.plugin.overlay.styles
+});
+
 //NOTE - Scraper is currently disabled - MAR 2015
 pageMod.PageMod({
   include: ['*.buffer.com', '*.bufferapp.com'],
