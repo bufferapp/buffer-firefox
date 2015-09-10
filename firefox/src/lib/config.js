@@ -154,7 +154,8 @@ exports.plugin = {
     scripts: [
       self.data.url('shared/buffer-install-check.js'),
       self.data.url('firefox/buffer-firefox-port-wrapper.js'),
-      self.data.url('shared/buffer-extension-settings.js')
+      self.data.url('shared/buffer-extension-settings.js'),
+      self.data.url('shared/buffer-get-user-info.js'),
     ]
   }
 };

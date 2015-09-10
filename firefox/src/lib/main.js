@@ -33,6 +33,7 @@ var prefs       = require('prefs');
 var legacy      = require('legacy');
 
 var tpc_disabled = false;
+var extensionUserData;
 
 const FIREFOX_VERSION = parseInt(system.version.split('.')[0]);
 const BUFFER_BUTTON_ID = 'buffer-button';
@@ -129,6 +130,13 @@ var attachOverlay = function (data, cb) {
   worker.port.on('buffer_tracking', function(payload) {
     _bmq[payload.methodName].apply(_bmq, payload.args);
   });
+
+  // Send cached user data to overlay when it opens up
+  if (extensionUserData) {
+    worker.port.on('buffer_overlay_open', function() {
+      worker.port.emit('buffer_user_data', extensionUserData);
+    });
+  }
 };
 
 // Show guide on first run
@@ -276,6 +284,13 @@ var settingsHandler = function(worker) {
 
   worker.port.on('buffer_open_settings', function() {
     tabs.open('about:addons');
+  });
+
+  // Listen for user data from buffer-get-user-info, and send it
+  // straight to overlay to make it available there
+  worker.port.on('buffer_user_data', function(userData) {
+    extensionUserData = userData;
+    overlayWorker.port.emit('buffer_user_data', extensionUserData);
   });
 
 };
