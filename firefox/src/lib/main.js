@@ -33,7 +33,7 @@ var prefs       = require('prefs');
 var legacy      = require('legacy');
 
 var tpc_disabled = false;
-var extensionUserData;
+var extensionUserData = ss.storage.extensionUserData;
 
 const FIREFOX_VERSION = parseInt(system.version.split('.')[0]);
 const BUFFER_BUTTON_ID = 'buffer-button';
@@ -141,6 +141,7 @@ var attachOverlay = function (data, cb) {
   // Listen for user data from buffer-overlay, and cache it here
   worker.port.on('buffer_user_data', function(userData) {
     extensionUserData = userData;
+    ss.storage.extensionUserData = extensionUserData;
     worker.port.emit('buffer_user_data', extensionUserData);
   });
 };
