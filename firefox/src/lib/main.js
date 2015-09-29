@@ -137,6 +137,12 @@ var attachOverlay = function (data, cb) {
       worker.port.emit('buffer_user_data', extensionUserData);
     });
   }
+
+  // Listen for user data from buffer-overlay, and cache it here
+  worker.port.on('buffer_user_data', function(userData) {
+    extensionUserData = userData;
+    worker.port.emit('buffer_user_data', extensionUserData);
+  });
 };
 
 // Show guide on first run
@@ -284,13 +290,6 @@ var settingsHandler = function(worker) {
 
   worker.port.on('buffer_open_settings', function() {
     tabs.open('about:addons');
-  });
-
-  // Listen for user data from buffer-get-user-info, and send it
-  // straight to overlay to make it available there
-  worker.port.on('buffer_user_data', function(userData) {
-    extensionUserData = userData;
-    overlayWorker.port.emit('buffer_user_data', extensionUserData);
   });
 
 };
