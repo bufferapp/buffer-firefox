@@ -1,3 +1,6 @@
 self.on("click", function (node, data) {
-    self.postMessage(node.src);
+    self.postMessage({
+      nodeSrc: node.src,
+      documentUrl: document.URL
+    });
 })

@@ -201,8 +201,8 @@ menu.image = cm.Item({
   context: cm.SelectorContext('img'),
   contentScriptFile: config.plugin.menu.image.scripts,
   contentScriptWhen: 'start',
-  onMessage: function (src) {
-    attachOverlay({placement: 'menu-image', image: src});
+  onMessage: function (data) {
+    attachOverlay({placement: 'menu-image', image: data.nodeSrc});
   }
 });
 
@@ -212,8 +212,8 @@ menu.pablo_image = cm.Item({
   context: cm.SelectorContext('img'),
   contentScriptFile: config.plugin.menu.image.scripts,
   contentScriptWhen: 'start',
-  onMessage: function(src) {
-    tabs.open('https://buffer.com/pablo?image=' + encodeURIComponent(src));
+  onMessage: function(data) {
+    tabs.open('https://buffer.com/pablo?image=' + encodeURIComponent(data.nodeSrc) + '&source_url=' + encodeURIComponent(data.documentUrl));
   }
 });
 
