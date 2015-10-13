@@ -1,4 +1,7 @@
 // Buffer Page
 self.on("click", function () {
-    self.postMessage("buffer_click");
+    self.postMessage({
+      action: "buffer_click",
+      documentUrl: document.URL
+    });
 })

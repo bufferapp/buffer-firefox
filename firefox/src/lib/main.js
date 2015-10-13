@@ -165,7 +165,7 @@ menu.page = cm.Item({
   contentScriptFile: config.plugin.menu.page.scripts,
   contentScriptWhen: 'start',
   onMessage: function (data) {
-    if(data == 'buffer_click') {
+    if(data.action == 'buffer_click') {
       attachOverlay({placement: 'menu-page'});
     }
   }
@@ -177,7 +177,7 @@ menu.selection = cm.Item({
   contentScriptFile: config.plugin.menu.page.scripts,
   contentScriptWhen: 'start',
   onMessage: function (data) {
-    if(data == 'buffer_click') {
+    if(data.action == 'buffer_click') {
       attachOverlay({placement: 'menu-selection'});
     }
   }
@@ -189,8 +189,8 @@ menu.pablo = cm.Item({
   contentScriptFile: config.plugin.menu.page.scripts,
   contentScriptWhen: 'start',
   onMessage: function (data) {
-    if(data == 'buffer_click') {
-      tabs.open('https://buffer.com/pablo?text=' + encodeURIComponent(selection.text));
+    if(data.action == 'buffer_click') {
+      tabs.open('https://buffer.com/pablo?text=' + encodeURIComponent(selection.text) + '&source_url=' + encodeURIComponent(data.documentUrl));
     }
   }
 });
