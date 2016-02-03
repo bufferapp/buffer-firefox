@@ -3,7 +3,7 @@
  * Legacy code for FF 28 and lower
  */
 
-var config = require('config');
+var config = require('./config');
 
 const BUFFER_BUTTON_ID = 'buffer-button';
 

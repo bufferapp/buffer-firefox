@@ -27,10 +27,10 @@ var ss          = require('sdk/simple-storage');
 var cm          = require('sdk/context-menu');
 
 var selection   = require('sdk/selection');
-var config      = require('config');
-var bufferSrc   = require('bufferSrc');
-var prefs       = require('prefs');
-var legacy      = require('legacy');
+var config      = require('./config');
+var bufferSrc   = require('./bufferSrc');
+var prefs       = require('./prefs');
+var legacy      = require('./legacy');
 
 var tpc_disabled = false;
 var extensionUserData = ss.storage.extensionUserData;

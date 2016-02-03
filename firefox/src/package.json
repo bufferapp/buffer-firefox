@@ -3,11 +3,12 @@
   "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
   "author": "Buffer",
   "version": "2.13.17",
-  "fullName": "Buffer",
-  "id": "jid1-zUyU7TGKwejAyA",
+  "title": "Buffer",
+  "id": "jid1-zUyU7TGKwejAyA@jetpack",
   "name": "buffer",
   "homepage": "https://buffer.com/guides/firefox",
   "icon": "data/shared/img/Icon.png",
+  "main": "lib/main.js",
   "permissions": {
     "private-browsing": true
   },
