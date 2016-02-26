@@ -2,12 +2,12 @@
   "description": "Easily add great articles, pictures and videos to your Buffer and we automagically share them for you through the day!",
   "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
   "author": "Buffer",
-  "version": "2.13.17",
+  "version": "2.13.18",
   "title": "Buffer",
   "id": "jid1-zUyU7TGKwejAyA@jetpack",
   "name": "buffer",
   "homepage": "https://buffer.com/guides/firefox",
-  "icon": "data/shared/img/Icon.png",
+  "icon": "resource://jid1-zUyU7TGKwejAyA-at-jetpack/data/shared/img/Icon.png",
   "main": "lib/main.js",
   "permissions": {
     "private-browsing": true
