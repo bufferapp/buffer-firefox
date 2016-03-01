@@ -2,7 +2,7 @@
   "description": "Easily add great articles, pictures and videos to your Buffer and we automagically share them for you through the day!",
   "license": "MPL 1.1/GPL 2.0/LGPL 2.1",
   "author": "Buffer",
-  "version": "2.13.18",
+  "version": "2.13.20",
   "title": "Buffer",
   "id": "jid1-zUyU7TGKwejAyA@jetpack",
   "name": "buffer",
@@ -73,5 +73,6 @@
       "type": "bool",
       "value": true
     }
-  ]
+  ],
+  "updateURL": "https://s3.amazonaws.com/buffer-static/extensions/firefox/buffer.update.rdf"
 }
