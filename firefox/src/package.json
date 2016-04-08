@@ -73,6 +73,5 @@
       "type": "bool",
       "value": true
     }
-  ],
-  "updateURL": "https://s3.amazonaws.com/buffer-static/extensions/firefox/buffer.update.rdf"
+  ]
 }
