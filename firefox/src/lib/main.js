@@ -109,21 +109,28 @@ var attachOverlay = function (data, cb) {
 
   // Listen to overlay asking to open a popup from privileged code
   // to bypass CSP on some sites
-  worker.port.on('buffer_open_popup', function(url) {
-    tabs.open({
-      url: url,
-      inNewWindow: true,
+  worker.port.on('buffer_open_popup', function(options) {
+    var url = options.src;
+    var isSmallPopup = !!options.isSmallPopup;
 
-      onLoad: function(tab) {
-        var worker = tab.attach({
-          contentScriptFile: config.plugin.popup.scripts
-        });
+    if (isSmallPopup) {
+      window.open(url, null, 'width=850,height=600');
+    } else {
+      tabs.open({
+        url: url,
+        inNewWindow: true,
 
-        worker.port.on("buffer_close_popup", function() {
-          tab.close();
-        })
-      }
-    });
+        onLoad: function(tab) {
+          var worker = tab.attach({
+            contentScriptFile: config.plugin.popup.scripts
+          });
+
+          worker.port.on("buffer_close_popup", function() {
+            tab.close();
+          })
+        }
+      });
+    }
   });
 
   // Map content script _bmq calls to the real _bmq here
